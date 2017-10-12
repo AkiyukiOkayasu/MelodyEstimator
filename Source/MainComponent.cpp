@@ -21,7 +21,7 @@ MainContentComponent::MainContentComponent()
     essentia::standard::AlgorithmFactory& factory = essentia::standard::AlgorithmFactory::instance();
     
     //    mel = factory.create("PitchMelodia", "minFrequency", (essentia::Real)220.0f, "maxFrequency", (essentia::Real)1760.0f, "voicingTolerance", -1.0f);//モノフォニック用
-    mel = factory.create("PredominantPitchMelodia", "minFrequency", (essentia::Real)220.0f, "maxFrequency", (essentia::Real)7040.0f, "voicingTolerance", -1.0f);//ポリフォニック用
+    mel = factory.create("PredominantPitchMelodia", "minFrequency", (essentia::Real)220.0f, "maxFrequency", (essentia::Real)7040.0f, "voicingTolerance", -0.7f);//ポリフォニック用
     //    voicingToleranceパラメータは要調整!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     //    voicingTolerance (real ∈ [-1.0, 1.4], default = 0.2) :
     //    allowed deviation below the average contour mean salience of all contours (fraction of the standard deviation)
