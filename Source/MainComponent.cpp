@@ -57,7 +57,17 @@ MainContentComponent::MainContentComponent()
     midiOut->startBackgroundThread();
     
     setSize (400, 400);
-    setAudioChannels (1, 0);
+    
+    //オーディオインターフェースの設定の呼び出し
+    PropertiesFile::Options options;
+    options.applicationName     = "Juce Audio Plugin Host";
+    options.filenameSuffix      = "settings";
+    options.osxLibrarySubFolder = "Preferences";
+    appProperties = new ApplicationProperties();
+    appProperties->setStorageParameters (options);
+    ScopedPointer<XmlElement> savedAudioState (appProperties->getUserSettings()->getXmlValue ("audioDeviceState"));
+    
+    setAudioChannels (1, 0, savedAudioState);
 }
 
 MainContentComponent::~MainContentComponent()
@@ -170,6 +180,10 @@ void MainContentComponent::showAudioSettings()
     o.useNativeTitleBar             = true;
     o.resizable                     = false;
     o.runModal();
+    
+    ScopedPointer<XmlElement> audioState (deviceManager.createStateXml());
+    appProperties->getUserSettings()->setValue ("audioDeviceState", audioState);
+    appProperties->getUserSettings()->saveIfNeeded();
 }
 
 int MainContentComponent::freqToMidi(float freq)

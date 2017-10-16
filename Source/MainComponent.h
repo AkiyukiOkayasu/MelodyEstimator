@@ -65,6 +65,9 @@ private:
     ScopedPointer<MidiOutput> midiOut;
     MidiMessage midiMessage;
     
+    //オーディオインターフェースの設定の記録、呼び出し用
+    ScopedPointer<ApplicationProperties> appProperties;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
 };
 
