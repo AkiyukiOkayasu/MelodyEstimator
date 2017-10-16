@@ -49,6 +49,9 @@ private:
     //==============================================================================
     void sendOSC(String oscAddress, int value);
     void sendMIDI(int noteNumber);
+    bool rmsThreshold(std::vector<float> &buf, float threshold);
+    
+    //8192サンプルごとにメロディー推定を行う
     static const int melFrameSize = 8192;
     
     //OSC

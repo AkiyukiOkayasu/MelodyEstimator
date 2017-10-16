@@ -199,3 +199,16 @@ void MainContentComponent::sendMIDI(int noteNumber)
     midiMessage = MidiMessage::noteOn(midiChannel, noteNumber, (uint8)127);
     midiOut->sendMessageNow(midiMessage);
 }
+
+bool MainContentComponent::rmsThreshold(std::vector<float> &buf, float threshold)
+{
+    std::vector<float> pow2;
+    for (auto& el: buf)
+    {
+        pow2.emplace_back(el * el);
+    }
+    
+    float accum = std::accumulate(std::begin(pow2), std::end(pow2), 0.0f);
+    float rmslevel = std::sqrt(accum / (float)pow2.size());
+    return rmslevel > threshold;
+}
