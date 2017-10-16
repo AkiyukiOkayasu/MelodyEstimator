@@ -78,13 +78,15 @@ void MainContentComponent::prepareToPlay (int samplesPerBlockExpected, double sa
 
 void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& bufferToFill)
 {
-    const float* lch = bufferToFill.buffer->getReadPointer(0);
+    const float* input = bufferToFill.buffer->getReadPointer(0);
     
     for (int samples = 0; samples < bufferToFill.buffer->getNumSamples(); ++samples)
     {
-        if (bufferIndex >= melFrameSize)
+        essentiaAudioBuffer.emplace_back((essentia::Real)input[samples]);
+        
+        if (essentiaAudioBuffer.size() >= melFrameSize)
         {
-            equalloudness->compute();
+            //equalloudness->compute();
             mel->compute();
             mel->reset();//compute()あとにreset()は必ず呼ぶこと
             pitchfilter->compute();
@@ -107,10 +109,8 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
                     sendMIDI(midiNote);
                 }
             }
-            bufferIndex = 0;
+            essentiaAudioBuffer.clear();
         }
-        essentiaAudioBuffer.at(bufferIndex) = (essentia::Real) lch[samples];
-        bufferIndex++;
     }
 }
 
