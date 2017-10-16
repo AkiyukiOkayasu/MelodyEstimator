@@ -96,29 +96,33 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
         
         if (essentiaAudioBuffer.size() >= melFrameSize)
         {
-            //equalloudness->compute();
-            mel->compute();
-            mel->reset();//compute()あとにreset()は必ず呼ぶこと
-            pitchfilter->compute();
-            
-            for (auto& el: freq)
+            if (rmsThreshold(essentiaAudioBuffer, 0.015f))
             {
-                int note = freqToMidi(el);
+                equalloudness->compute();
+                mel->compute();
+                mel->reset();//compute()あとにreset()は必ず呼ぶこと
+                pitchfilter->compute();
                 
-                if  (note > 0)
+                for (auto& el: freq)
                 {
-                    note = note % 12 + 60;
-                } else {
-                    continue;
-                }
-                
-                if (midiNote != note && rmsThreshold(essentiaAudioBuffer, 0.015f))
-                {
-                    midiNote = note;
-                    sendOSC("/juce/notenumber", midiNote);
-                    sendMIDI(midiNote);
+                    int note = freqToMidi(el);
+                    
+                    if  (note > 0)
+                    {
+                        note = note % 12 + 60;
+                    } else {
+                        continue;
+                    }
+                    
+                    if (midiNote != note)
+                    {
+                        midiNote = note;
+                        sendOSC("/juce/notenumber", midiNote);
+                        sendMIDI(midiNote);
+                    }
                 }
             }
+            
             essentiaAudioBuffer.clear();
         }
     }
