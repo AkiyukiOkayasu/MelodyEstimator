@@ -17,6 +17,8 @@
 
 MainContentComponent::MainContentComponent()
 {
+    setMacMainMenu(this);
+    
     essentia::init();
     essentia::standard::AlgorithmFactory& factory = essentia::standard::AlgorithmFactory::instance();
     
@@ -48,21 +50,19 @@ MainContentComponent::MainContentComponent()
     pitchfilter->output("pitchFiltered").set(freq);
     std::cout<<"Essentia: algorithm connected"<<std::endl;
     
-    if(! sender.connect(ip, portnumber)){
-        std::cout<<"OSC connection Error..."<<std::endl;
-    }
+    if(! sender.connect(ip, portnumber)) std::cout<<"OSC connection Error..."<<std::endl;
     
     midiOut = MidiOutput::createNewDevice("JUCE");
     std::cout<<midiOut->getName()<<std::endl;
     midiOut->startBackgroundThread();
     
     setSize (400, 400);
-    setMacMainMenu(this);
     setAudioChannels (1, 0);
 }
 
 MainContentComponent::~MainContentComponent()
 {
+    setMacMainMenu(nullptr);
     midiOut->stopBackgroundThread();
     shutdownAudio();
     essentia::shutdown();
