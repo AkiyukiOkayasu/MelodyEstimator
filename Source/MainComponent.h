@@ -47,13 +47,21 @@ public:
     
 private:
     //==============================================================================
+    void sendOSC(String oscAddress, int value);
+    void sendMIDI(int noteNumber);
     static const int melFrameSize = 8192;
-    int midinote = -1;
+    
+    //OSC
     OSCSender sender;
     String ip = "127.0.0.1";
     static const int portnumber = 8080;
     
-    int bufferIndex = 0;
+    //MIDI
+    int midiNote = -1;
+    static const int midiChannel = 1;
+    ScopedPointer<MidiOutput> midiOut;
+    MidiMessage midiMessage;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
 };
 

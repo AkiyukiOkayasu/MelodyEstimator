@@ -52,6 +52,10 @@ MainContentComponent::MainContentComponent()
         std::cout<<"OSC connection Error..."<<std::endl;
     }
     
+    midiOut = MidiOutput::createNewDevice("JUCE");
+    std::cout<<midiOut->getName()<<std::endl;
+    midiOut->startBackgroundThread();
+    
     setSize (400, 400);
     setMacMainMenu(this);
     setAudioChannels (1, 0);
@@ -59,6 +63,7 @@ MainContentComponent::MainContentComponent()
 
 MainContentComponent::~MainContentComponent()
 {
+    midiOut->stopBackgroundThread();
     shutdownAudio();
     essentia::shutdown();
 }
@@ -87,12 +92,19 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
             for (auto& el: freq)
             {
                 int note = freqToMidi(el);
-                if (midinote != note && note > 0)
+                
+                if  (note > 0)
                 {
-                    midinote = freqToMidi(el);
-                    if (! sender.send("/juce/notenumber", (int)midinote)) {
-                        std::cout<<"OSC send Error..."<<std::endl;
-                    }
+                    note = note % 12 + 60;
+                } else {
+                    continue;
+                }
+                
+                if (midiNote != note && rmsThreshold(essentiaAudioBuffer, 0.015f))
+                {
+                    midiNote = note;
+                    sendOSC("/juce/notenumber", midiNote);
+                    sendMIDI(midiNote);
                 }
             }
             bufferIndex = 0;
@@ -169,4 +181,21 @@ int MainContentComponent::freqToMidi(float freq)
     
     int notenumber = std::nearbyint(69.0 + 12.0 * log2(freq / 440.0));
     return notenumber;
+}
+
+void MainContentComponent::sendOSC(String oscAddress, int value)
+{
+    sender.send(oscAddress, value);
+}
+
+void MainContentComponent::sendMIDI(int noteNumber)
+{
+    if (midiMessage.isNoteOn())
+    {
+        midiMessage = MidiMessage::noteOff(midiChannel, midiMessage.getNoteNumber(), (uint8)0);
+        midiOut->sendMessageNow(midiMessage);
+    }
+    
+    midiMessage = MidiMessage::noteOn(midiChannel, noteNumber, (uint8)127);
+    midiOut->sendMessageNow(midiMessage);
 }
