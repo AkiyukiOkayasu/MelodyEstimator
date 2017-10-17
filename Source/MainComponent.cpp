@@ -169,9 +169,12 @@ void MainContentComponent::menuItemSelected(int menuItemID, int topLevelMenuInde
 void MainContentComponent::showAudioSettings()
 {
     AudioDeviceSelectorComponent audioSettingsComp (deviceManager,
-                                                    0, 256,
-                                                    0, 256,
-                                                    true, true, true, false);
+                                                    1, 1,//Audio input channels(min/max)
+                                                    0, 0,//Audio output channels(min/max)
+                                                    false,//Show MIDI input
+                                                    false, //Show MIDI output
+                                                    false,//Stereo pair
+                                                    false);//Show advanced options
     
     audioSettingsComp.setSize (500, 450);
     
@@ -185,6 +188,7 @@ void MainContentComponent::showAudioSettings()
     o.resizable                     = false;
     o.runModal();
     
+    //設定をXMLファイルで保存
     ScopedPointer<XmlElement> audioState (deviceManager.createStateXml());
     appProperties->getUserSettings()->setValue ("audioDeviceState", audioState);
     appProperties->getUserSettings()->saveIfNeeded();
