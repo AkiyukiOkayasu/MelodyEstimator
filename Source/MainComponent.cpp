@@ -29,7 +29,7 @@ MainContentComponent::MainContentComponent()
     //voicingToleranceパラメータは要調整 [-1.0~1.4] default:0.2
     //反応のしやすさ的なパラメータ
     
-    pitchfilter = factory.create("PitchFilter");
+    pitchfilter = factory.create("PitchFilter", "confidenceThreshold", 36, "minChunkSize", 30);
     equalloudness = factory.create("EqualLoudness");
     std::cout<<"Essentia: algorithm created"<<std::endl;
     
