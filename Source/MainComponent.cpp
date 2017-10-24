@@ -96,7 +96,7 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
         
         if (essentiaAudioBuffer.size() >= melFrameSize)
         {
-            if (rmsThreshold(essentiaAudioBuffer, 0.015f))
+            if (rmsThreshold(essentiaAudioBuffer, noiseGateThreshold))
             {
                 equalloudness->compute();
                 mel->compute();
@@ -224,6 +224,9 @@ void MainContentComponent::sendMIDI(int noteNumber)
 
 bool MainContentComponent::rmsThreshold(std::vector<float> &buf, float threshold)
 {
+    //入力のRMSレベルが閾値を上回っているかを判定する
+    //buf:入力音声AudioSampleBufferなど
+    //threshold:閾値(dB)
     std::vector<float> pow2;
     for (auto& el: buf)
     {
@@ -232,5 +235,5 @@ bool MainContentComponent::rmsThreshold(std::vector<float> &buf, float threshold
     
     float accum = std::accumulate(std::begin(pow2), std::end(pow2), 0.0f);
     float rmslevel = std::sqrt(accum / (float)pow2.size());
-    return rmslevel > threshold;
+    return rmslevel > Decibels::decibelsToGain(threshold);
 }
