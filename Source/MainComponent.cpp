@@ -19,6 +19,16 @@ MainContentComponent::MainContentComponent()
 {
     setMacMainMenu(this);
     
+    addAndMakeVisible(noiseGateThreshold);
+    noiseGateThreshold.setRange(-72.0, 0.0, 1.0);
+    noiseGateThreshold.setTextValueSuffix("dB");
+    noiseGateThreshold.setTextBoxStyle(Slider::TextBoxLeft, false, 100, noiseGateThreshold.getTextBoxHeight());
+    noiseGateThreshold.setValue(-24.0);
+    
+    addAndMakeVisible(noiseGateLabel);
+    noiseGateLabel.setText("Noise Gate Threshold", NotificationType::dontSendNotification);
+    noiseGateLabel.attachToComponent(&noiseGateThreshold, false);
+    
     essentia::init();
     essentia::standard::AlgorithmFactory& factory = essentia::standard::AlgorithmFactory::instance();
     
@@ -56,7 +66,7 @@ MainContentComponent::MainContentComponent()
     std::cout<<midiOut->getName()<<std::endl;
     midiOut->startBackgroundThread();
     
-    setSize (400, 400);
+    setSize (600, 130);
     
     //オーディオインターフェースの設定の呼び出し
     PropertiesFile::Options options;
@@ -96,7 +106,7 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
         
         if (essentiaAudioBuffer.size() >= melFrameSize)
         {
-            if (rmsThreshold(essentiaAudioBuffer, noiseGateThreshold))
+            if (rmsThreshold(essentiaAudioBuffer, noiseGateThreshold.getValue()))
             {
                 equalloudness->compute();
                 mel->compute();
@@ -140,6 +150,7 @@ void MainContentComponent::paint (Graphics& g)
 
 void MainContentComponent::resized()
 {
+    noiseGateThreshold.setBounds(10, 50, getWidth() - 20, 50);
 }
 
 StringArray MainContentComponent::getMenuBarNames()

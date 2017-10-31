@@ -69,7 +69,8 @@ private:
     ScopedPointer<ApplicationProperties> appProperties;
     
     //小音量時にメロディー判定を行わないようにするための閾値(dB)
-    float noiseGateThreshold = -32.0f;
+    Slider noiseGateThreshold;
+    Label noiseGateLabel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
 };
