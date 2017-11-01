@@ -127,22 +127,28 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
                 mel->reset();//compute()あとにreset()は必ず呼ぶこと
                 pitchfilter->compute();
                 
-                for (auto& el: freq)
+                //周波数->MIDIノート変換(1オクターブ内にまとめる処理も行なっているので0~11にマッピングされる)
+                auto freqToMIDI = [](float hz)->int{
+                    return hz >= 20.0 ? (int)std::nearbyint(69.0 + 12.0 * log2(hz / 440.0)) % (int)12: -1;//20Hz以下の時は-1を返す
+                };
+                
+                std::vector<int> noteArray;
+                noteArray.resize(freq.size(), -1);
+                std::transform(freq.begin(), freq.end(), std::back_inserter(noteArray), freqToMIDI);
+                
+                const int n = 10;
+                for (int i = 0; i < noteArray.size() - n; ++i)
                 {
-                    int note = freqToMidi(el);
+                    const int target = noteArray.at(i);
+                    if  (target == -1 || target == midiNote) continue;
                     
-                    if  (note > 0)
+                    bool isSame = std::all_of(noteArray.begin() + i, noteArray.begin() + i + n, [target](int x){return x == target;});
+                    if (isSame)
                     {
-                        note = note % 12 + 60;
-                    } else {
-                        continue;
-                    }
-                    
-                    if (midiNote != note)
-                    {
-                        midiNote = note;
-                        sendOSC("/juce/notenumber", midiNote);
-                        sendMIDI(midiNote);
+                        jassert(0 <= target || target < 12);
+                        midiNote = target;
+                        sendOSC("/juce/notenumber", midiNote + 60);
+                        sendMIDI(midiNote + 60);
                     }
                 }
             }
@@ -230,17 +236,6 @@ void MainContentComponent::showAudioSettings()
     ScopedPointer<XmlElement> audioState (deviceManager.createStateXml());
     appProperties->getUserSettings()->setValue ("audioDeviceState", audioState);
     appProperties->getUserSettings()->saveIfNeeded();
-}
-
-int MainContentComponent::freqToMidi(float freq)
-{
-    if (freq <= 20.0)//20Hz以下の時は-1を返す
-    {
-        return -1;
-    }
-    
-    int notenumber = std::nearbyint(69.0 + 12.0 * log2(freq / 440.0));
-    return notenumber;
 }
 
 void MainContentComponent::sendOSC(String oscAddress, int value)

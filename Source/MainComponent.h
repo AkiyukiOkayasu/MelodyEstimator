@@ -37,7 +37,6 @@ public:
     PopupMenu getMenuForIndex (int topLevelMenuIndex, const String& /*menuName*/) override;
     void menuItemSelected(int menuItemID, int topLevelMenuIndex) override;
     void showAudioSettings();
-    int freqToMidi(float freq);
     //==============================================================================
     std::vector<essentia::Real> essentiaAudioBuffer;
     std::vector<essentia::Real> pitch;
