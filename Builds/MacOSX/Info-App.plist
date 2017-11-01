@@ -8,7 +8,7 @@
     <key>CFBundleIconFile</key>
     <string></string>
     <key>CFBundleIdentifier</key>
-    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <string>net.tkrworks.JUCEEssentiaMelodyDetection</string>
     <key>CFBundleName</key>
     <string>JUCE-EssentiaMelodyDetection</string>
     <key>CFBundleDisplayName</key>
@@ -18,9 +18,9 @@
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleShortVersionString</key>
-    <string>0.1.0</string>
+    <string>0.2.1</string>
     <key>CFBundleVersion</key>
-    <string>0.1.0</string>
+    <string>0.2.1</string>
     <key>NSHumanReadableCopyright</key>
     <string></string>
     <key>NSHighResolutionCapable</key>

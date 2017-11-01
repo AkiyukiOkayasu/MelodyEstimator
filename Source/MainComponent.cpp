@@ -65,7 +65,7 @@ MainContentComponent::MainContentComponent()
     if(! sender.connect(ip, portnumber)) std::cout<<"OSC connection Error..."<<std::endl;
     
     midiOut = MidiOutput::createNewDevice("JUCE");
-    std::cout<<midiOut->getName()<<std::endl;
+    std::cout<<"MIDI port: "<<midiOut->getName()<<std::endl;
     midiOut->startBackgroundThread();
     
     setSize (600, 130);
@@ -171,7 +171,6 @@ void MainContentComponent::sliderValueChanged (Slider* slider)
 {
     if (slider == &noiseGateThreshold)
     {
-        std::cout<<"aaa"<<std::endl;
         //スライダーの値をXMLで保存
         String xmltag =  "noiseGateThreshold";
         ScopedPointer<XmlElement> noiseGateSettings = new XmlElement(xmltag);
