@@ -19,16 +19,18 @@ MainContentComponent::MainContentComponent()
 {
     setMacMainMenu(this);
     
+    //GUI Noise gate
     addAndMakeVisible(noiseGateThreshold);
     noiseGateThreshold.setRange(-72.0, 0.0, 1.0);
     noiseGateThreshold.setTextValueSuffix("dB");
     noiseGateThreshold.setTextBoxStyle(Slider::TextBoxLeft, false, 100, noiseGateThreshold.getTextBoxHeight());
-    noiseGateThreshold.setValue(-24.0);
+    noiseGateThreshold.addListener(this);
     
     addAndMakeVisible(noiseGateLabel);
     noiseGateLabel.setText("Noise Gate Threshold", NotificationType::dontSendNotification);
     noiseGateLabel.attachToComponent(&noiseGateThreshold, false);
     
+    //Essentia
     essentia::init();
     essentia::standard::AlgorithmFactory& factory = essentia::standard::AlgorithmFactory::instance();
     
@@ -68,14 +70,26 @@ MainContentComponent::MainContentComponent()
     
     setSize (600, 130);
     
-    //オーディオインターフェースの設定の呼び出し
+    
+    //保存したパラメータをXMLファイルから呼び出し
     PropertiesFile::Options options;
     options.applicationName     = "Juce Audio Plugin Host";
     options.filenameSuffix      = "settings";
     options.osxLibrarySubFolder = "Preferences";
     appProperties = new ApplicationProperties();
     appProperties->setStorageParameters (options);
-    ScopedPointer<XmlElement> savedAudioState (appProperties->getUserSettings()->getXmlValue ("audioDeviceState"));
+    ScopedPointer<XmlElement> savedAudioState (appProperties->getUserSettings()->getXmlValue ("audioDeviceState"));//オーディオインターフェースの設定
+    ScopedPointer<XmlElement> savedNoiseGateSettings (appProperties->getUserSettings()->getXmlValue("noiseGateSettings"));//ノイズゲートの設定
+    
+    if (savedNoiseGateSettings != nullptr)
+    {
+        const double thre = savedNoiseGateSettings->getDoubleAttribute("threshold");
+        noiseGateThreshold.setValue(thre, NotificationType::dontSendNotification);
+    }
+    else
+    {
+        noiseGateThreshold.setValue(-24.0, NotificationType::dontSendNotification);
+    }
     
     setAudioChannels (1, 0, savedAudioState);
 }
@@ -151,6 +165,20 @@ void MainContentComponent::paint (Graphics& g)
 void MainContentComponent::resized()
 {
     noiseGateThreshold.setBounds(10, 50, getWidth() - 20, 50);
+}
+
+void MainContentComponent::sliderValueChanged (Slider* slider)
+{
+    if (slider == &noiseGateThreshold)
+    {
+        std::cout<<"aaa"<<std::endl;
+        //スライダーの値をXMLで保存
+        String xmltag =  "noiseGateThreshold";
+        ScopedPointer<XmlElement> noiseGateSettings = new XmlElement(xmltag);
+        noiseGateSettings->setAttribute("threshold", slider->getValue());
+        appProperties->getUserSettings()->setValue ("noiseGateSettings", noiseGateSettings);
+        appProperties->getUserSettings()->saveIfNeeded();
+    }
 }
 
 StringArray MainContentComponent::getMenuBarNames()

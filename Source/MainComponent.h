@@ -19,7 +19,8 @@
 
 class MainContentComponent :
 public AudioAppComponent,
-public MenuBarModel
+public MenuBarModel,
+public Slider::Listener
 {
 public:
     MainContentComponent();
@@ -31,6 +32,7 @@ public:
     //==============================================================================
     void paint (Graphics& g) override;
     void resized() override;
+    void sliderValueChanged (Slider* slider) override;
     StringArray getMenuBarNames() override;
     PopupMenu getMenuForIndex (int topLevelMenuIndex, const String& /*menuName*/) override;
     void menuItemSelected(int menuItemID, int topLevelMenuIndex) override;
