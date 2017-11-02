@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    MainComponent.h
-    Created: 10 Oct 2017 1:25:14pm
-    Author:  Akiyuki Okayasu
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
@@ -38,11 +28,11 @@ public:
     void menuItemSelected(int menuItemID, int topLevelMenuIndex) override;
     void showAudioSettings();
     //==============================================================================
-    std::vector<essentia::Real> essentiaAudioBuffer;
-    std::vector<essentia::Real> pitch;
-    std::vector<essentia::Real> pitchConfidence;
-    std::vector<essentia::Real> freq;
-    essentia::standard::Algorithm* mel;
+    std::vector<essentia::Real> essentiaInput;
+    std::vector<essentia::Real> essentiaPitch;
+    std::vector<essentia::Real> essentiaPitchConfidence;
+    std::vector<essentia::Real> essentiaFreq;
+    essentia::standard::Algorithm* melodyDetection;
     essentia::standard::Algorithm* pitchfilter;
     essentia::standard::Algorithm* equalloudness;
     
@@ -50,23 +40,24 @@ private:
     //==============================================================================
     void sendOSC(String oscAddress, int value);
     void sendMIDI(int noteNumber);
-    bool rmsThreshold(std::vector<float> &buf, float threshold);
+    bool isLouder_RMS(std::vector<float> &buffer, const float threshold_dB);
     
-    //8192サンプルごとにメロディー推定を行う
-    static const int melFrameSize = 8192;
+    static const int lengthToDetectMelody_sample = 8192;//8192サンプルごとにメロディー推定を行う
     
     //OSC
-    OSCSender sender;
-    String ip = "127.0.0.1";
-    static const int portnumber = 8080;
+    OSCSender oscSender;
+    const String ip = "127.0.0.1";
+    static const int port = 8080;
+    const String oscAddress_note = "/melodyDetection/note";
     
     //MIDI
-    int midiNote = -1;
     static const int midiChannel = 1;
+    const String midiPortName = "MelodyDetection";
     ScopedPointer<MidiOutput> midiOut;
     MidiMessage midiMessage;
+    int lastNote = -1;
     
-    //オーディオインターフェースの設定の記録、呼び出し用
+    //オーディオインターフェース,ノイズゲート設定の記録、呼び出し用
     ScopedPointer<ApplicationProperties> appProperties;
     
     //小音量時にメロディー判定を行わないようにするための閾値(dB)

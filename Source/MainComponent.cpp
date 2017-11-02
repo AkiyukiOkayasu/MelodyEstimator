@@ -1,18 +1,3 @@
-/*
- ==============================================================================
- 
- This file was auto-generated!
- 
- ==============================================================================
- */
-
-//==============================================================================
-/*
- This component lives inside our window, and this is where you should put all
- your controls and content.
- */
-
-//==============================================================================
 #include "MainComponent.h"
 
 MainContentComponent::MainContentComponent()
@@ -33,43 +18,33 @@ MainContentComponent::MainContentComponent()
     //Essentia
     essentia::init();
     essentia::standard::AlgorithmFactory& factory = essentia::standard::AlgorithmFactory::instance();
-    
-    //モノフォニック用
-    //mel = factory.create("PitchMelodia", "minFrequency", (essentia::Real)220.0f, "maxFrequency", (essentia::Real)1760.0f, "voicingTolerance", -1.0f);
-    //ポリフォニック用
-    mel = factory.create("PredominantPitchMelodia", "minFrequency", (essentia::Real)220.0f, "maxFrequency", (essentia::Real)7040.0f, "voicingTolerance", -0.7f);
-    //voicingToleranceパラメータは要調整 [-1.0~1.4] default:0.2
-    //反応のしやすさ的なパラメータ
-    
+    melodyDetection = factory.create("PredominantPitchMelodia", "minFrequency", (essentia::Real)220.0f, "maxFrequency", (essentia::Real)7040.0f, "voicingTolerance", -0.7f);//voicingToleranceパラメータは要調整 [-1.0~1.4] default:0.2(反応のしやすさ的なパラメータ)
     pitchfilter = factory.create("PitchFilter", "confidenceThreshold", 36, "minChunkSize", 30);
     equalloudness = factory.create("EqualLoudness");
     std::cout<<"Essentia: algorithm created"<<std::endl;
     
-    essentiaAudioBuffer.reserve(melFrameSize);
-    essentiaAudioBuffer.resize(melFrameSize);
-    std::iota(std::begin(essentiaAudioBuffer), std::end(essentiaAudioBuffer), 0.0f);
-    pitch.reserve(200);
-    pitchConfidence.reserve(200);
-    freq.reserve(200);
-    
-    equalloudness->input("signal").set(essentiaAudioBuffer);
-    equalloudness->output("signal").set(essentiaAudioBuffer);
-    mel->input("signal").set(essentiaAudioBuffer);
-    mel->output("pitch").set(pitch);
-    mel->output("pitchConfidence").set(pitchConfidence);
-    pitchfilter->input("pitch").set(pitch);
-    pitchfilter->input("pitchConfidence").set(pitchConfidence);
-    pitchfilter->output("pitchFiltered").set(freq);
+    essentiaInput.reserve(lengthToDetectMelody_sample);
+    essentiaInput.resize(lengthToDetectMelody_sample, 0.0f);
+    essentiaPitch.reserve(200);
+    essentiaPitchConfidence.reserve(200);
+    essentiaFreq.reserve(200);
+    equalloudness->input("signal").set(essentiaInput);
+    equalloudness->output("signal").set(essentiaInput);
+    melodyDetection->input("signal").set(essentiaInput);
+    melodyDetection->output("pitch").set(essentiaPitch);
+    melodyDetection->output("pitchConfidence").set(essentiaPitchConfidence);
+    pitchfilter->input("pitch").set(essentiaPitch);
+    pitchfilter->input("pitchConfidence").set(essentiaPitchConfidence);
+    pitchfilter->output("pitchFiltered").set(essentiaFreq);
     std::cout<<"Essentia: algorithm connected"<<std::endl;
     
-    if(! sender.connect(ip, portnumber)) std::cout<<"OSC connection Error..."<<std::endl;
+    if(! oscSender.connect(ip, port)) std::cout<<"OSC connection Error..."<<std::endl;
     
-    midiOut = MidiOutput::createNewDevice("JUCE");
+    midiOut = MidiOutput::createNewDevice(midiPortName);
     std::cout<<"MIDI port: "<<midiOut->getName()<<std::endl;
     midiOut->startBackgroundThread();
     
     setSize (600, 130);
-    
     
     //保存したパラメータをXMLファイルから呼び出し
     PropertiesFile::Options options;
@@ -80,17 +55,8 @@ MainContentComponent::MainContentComponent()
     appProperties->setStorageParameters (options);
     ScopedPointer<XmlElement> savedAudioState (appProperties->getUserSettings()->getXmlValue ("audioDeviceState"));//オーディオインターフェースの設定
     ScopedPointer<XmlElement> savedNoiseGateSettings (appProperties->getUserSettings()->getXmlValue("noiseGateSettings"));//ノイズゲートの設定
-    
-    if (savedNoiseGateSettings != nullptr)
-    {
-        const double thre = savedNoiseGateSettings->getDoubleAttribute("threshold");
-        noiseGateThreshold.setValue(thre, NotificationType::dontSendNotification);
-    }
-    else
-    {
-        noiseGateThreshold.setValue(-24.0, NotificationType::dontSendNotification);
-    }
-    
+    const double thrsld = savedNoiseGateSettings ? savedNoiseGateSettings->getDoubleAttribute("threshold") : -24.0;
+    noiseGateThreshold.setValue(thrsld, NotificationType::dontSendNotification);
     setAudioChannels (1, 0, savedAudioState);
 }
 
@@ -116,44 +82,41 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
     
     for (int samples = 0; samples < bufferToFill.buffer->getNumSamples(); ++samples)
     {
-        essentiaAudioBuffer.emplace_back((essentia::Real)input[samples]);
+        essentiaInput.emplace_back((essentia::Real)input[samples]);
         
-        if (essentiaAudioBuffer.size() >= melFrameSize)
+        if (essentiaInput.size() >= lengthToDetectMelody_sample)
         {
-            if (rmsThreshold(essentiaAudioBuffer, noiseGateThreshold.getValue()))
+            if (!isLouder_RMS(essentiaInput, noiseGateThreshold.getValue())) continue;
+            
+            equalloudness->compute();
+            melodyDetection->compute();
+            melodyDetection->reset();//compute()あとにreset()は必ず呼ぶこと
+            pitchfilter->compute();
+            
+            //周波数->クロマチック変換(C~Bが0~11にマッピングされる)
+            auto freqToChromatic = [](float hz)->int{
+                return hz >= 20.0 ? (int)std::nearbyint(69.0 + 12.0 * log2(hz / 440.0)) % (int)12: -1;//20Hz以下の時は-1を返す
+            };
+            
+            std::vector<int> chromaArray(essentiaFreq.size(), -1);
+            std::transform(essentiaFreq.begin(), essentiaFreq.end(), std::back_inserter(chromaArray), freqToChromatic);
+            
+            const int numConsecutive = 10;
+            for (int i = 0; i < chromaArray.size() - numConsecutive; ++i)
             {
-                equalloudness->compute();
-                mel->compute();
-                mel->reset();//compute()あとにreset()は必ず呼ぶこと
-                pitchfilter->compute();
+                const int target = chromaArray[i];
+                if  (target == -1 || target == lastNote) continue;
                 
-                //周波数->MIDIノート変換(1オクターブ内にまとめる処理も行なっているので0~11にマッピングされる)
-                auto freqToMIDI = [](float hz)->int{
-                    return hz >= 20.0 ? (int)std::nearbyint(69.0 + 12.0 * log2(hz / 440.0)) % (int)12: -1;//20Hz以下の時は-1を返す
-                };
-                
-                std::vector<int> noteArray;
-                noteArray.resize(freq.size(), -1);
-                std::transform(freq.begin(), freq.end(), std::back_inserter(noteArray), freqToMIDI);
-                
-                const int n = 10;
-                for (int i = 0; i < noteArray.size() - n; ++i)
+                bool isSame = std::all_of(chromaArray.begin() + i, chromaArray.begin() + i + numConsecutive, [target](int x){return x == target;});
+                if (isSame)
                 {
-                    const int target = noteArray.at(i);
-                    if  (target == -1 || target == midiNote) continue;
-                    
-                    bool isSame = std::all_of(noteArray.begin() + i, noteArray.begin() + i + n, [target](int x){return x == target;});
-                    if (isSame)
-                    {
-                        jassert(0 <= target || target < 12);
-                        midiNote = target;
-                        sendOSC("/juce/notenumber", midiNote + 60);
-                        sendMIDI(midiNote + 60);
-                    }
+                    lastNote = target;
+                    sendOSC(oscAddress_note, lastNote + 60);
+                    sendMIDI(lastNote + 60);
                 }
             }
             
-            essentiaAudioBuffer.clear();
+            essentiaInput.clear();
         }
     }
 }
@@ -240,7 +203,7 @@ void MainContentComponent::showAudioSettings()
 
 void MainContentComponent::sendOSC(String oscAddress, int value)
 {
-    sender.send(oscAddress, value);
+    oscSender.send(oscAddress, value);
 }
 
 void MainContentComponent::sendMIDI(int noteNumber)
@@ -255,18 +218,14 @@ void MainContentComponent::sendMIDI(int noteNumber)
     midiOut->sendMessageNow(midiMessage);
 }
 
-bool MainContentComponent::rmsThreshold(std::vector<float> &buf, float threshold)
+bool MainContentComponent::isLouder_RMS(std::vector<float> &buffer, const float threshold_dB)
 {
     //入力のRMSレベルが閾値を上回っているかを判定する
-    //buf:入力音声AudioSampleBufferなど
+    //buffer:入力音声AudioSampleBufferなど
     //threshold:閾値(dB)
-    std::vector<float> pow2;
-    for (auto& el: buf)
-    {
-        pow2.emplace_back(el * el);
-    }
-    
-    float accum = std::accumulate(std::begin(pow2), std::end(pow2), 0.0f);
-    float rmslevel = std::sqrt(accum / (float)pow2.size());
-    return rmslevel > Decibels::decibelsToGain(threshold);
+    double rmsLevel = 0;
+    std::for_each(std::begin(buffer), std::end(buffer), [&rmsLevel](float x) mutable {rmsLevel += x * x;});
+    rmsLevel = rmsLevel / (double)buffer.size();
+    rmsLevel = std::sqrt(rmsLevel);
+    return rmsLevel > Decibels::decibelsToGain(threshold_dB);
 }
