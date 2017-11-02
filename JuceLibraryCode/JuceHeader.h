@@ -41,7 +41,7 @@
 namespace ProjectInfo
 {
     const char* const  projectName    = "JUCE-EssentiaMelodyDetection";
-    const char* const  versionString  = "0.3.0";
-    const int          versionNumber  = 0x300;
+    const char* const  versionString  = "0.4.1";
+    const int          versionNumber  = 0x401;
 }
 #endif
