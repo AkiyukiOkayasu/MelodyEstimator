@@ -94,25 +94,25 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
             pitchfilter->compute();
             
             //周波数->クロマチック変換(C~Bが0~11にマッピングされる)
-            auto freqToChromatic = [](float hz)->int{
-                return hz >= 20.0 ? (int)std::nearbyint(69.0 + 12.0 * log2(hz / 440.0)) % (int)12: -1;//20Hz以下の時は-1を返す
+            auto freqToNote = [](float hz)->int{
+                return hz >= 20.0 ? std::nearbyint(69.0 + 12.0 * log2(hz / 440.0)): -1;//20Hz以下の時は-1を返す
             };
             
-            std::vector<int> chromaArray(essentiaFreq.size(), -1);
-            std::transform(essentiaFreq.begin(), essentiaFreq.end(), std::back_inserter(chromaArray), freqToChromatic);
+            std::vector<int> noteArray(essentiaFreq.size(), -1);
+            std::transform(essentiaFreq.begin(), essentiaFreq.end(), std::back_inserter(noteArray), freqToNote);
             
             const int numConsecutive = 10;
-            for (int i = 0; i < chromaArray.size() - numConsecutive; ++i)
+            for (int i = 0; i < noteArray.size() - numConsecutive; ++i)
             {
-                const int target = chromaArray[i];
+                const int target = noteArray[i];
                 if  (target == -1 || target == lastNote) continue;
                 
-                bool isSame = std::all_of(chromaArray.begin() + i, chromaArray.begin() + i + numConsecutive, [target](int x){return x == target;});
+                bool isSame = std::all_of(noteArray.begin() + i, noteArray.begin() + i + numConsecutive, [target](int x){return x == target;});
                 if (isSame)
                 {
                     lastNote = target;
-                    sendOSC(oscAddress_note, lastNote + 60);
-                    sendMIDI(lastNote + 60);
+                    sendOSC(oscAddress_note, lastNote);
+                    sendMIDI(lastNote);
                 }
             }
             
