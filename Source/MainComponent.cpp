@@ -48,7 +48,7 @@ MainContentComponent::MainContentComponent()
     
     //保存したパラメータをXMLファイルから呼び出し
     PropertiesFile::Options options;
-    options.applicationName     = "Juce Audio Plugin Host";
+    options.applicationName     = ProjectInfo::projectName;
     options.filenameSuffix      = "settings";
     options.osxLibrarySubFolder = "Preferences";
     appProperties = new ApplicationProperties();
