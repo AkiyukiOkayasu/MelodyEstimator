@@ -32,6 +32,7 @@
 		44764AB25E0F4B5ACDF9E3E0 = {isa = PBXBuildFile; fileRef = 1DB134AB31312493E9362609; };
 		7D67F6E71C901E15BCA2FD5D = {isa = PBXBuildFile; fileRef = 79E517057A91E981969FDF17; };
 		AA1756D91AB37748D3B2D256 = {isa = PBXBuildFile; fileRef = 7060E40AF6865B4C307F955C; };
+		21E7B92AA77A63952204ABBD = {isa = PBXBuildFile; fileRef = DD48A74191E3FD5D5FDDE713; };
 		05B170EDE045F280941F95F3 = {isa = PBXBuildFile; fileRef = 6EACDB41CE4D0FC85F029F19; };
 		0615FEFD506EB70D5618BB77 = {isa = PBXBuildFile; fileRef = 8106F4971D281487B08FBD82; };
 		459B8A656ECD0E28994F7D48 = {isa = PBXBuildFile; fileRef = 13B1EB660502035B93985C23; };
@@ -83,8 +84,10 @@
 		CDED6AF18B8D60491EE8B82D = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_data_structures"; path = "/Applications/JUCE/modules/juce_data_structures"; sourceTree = "<absolute>"; };
 		D2217C4587966975334E6AD2 = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		D83DF790A29FE1E0759BE853 = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		DD48A74191E3FD5D5FDDE713 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "include_juce_dsp.mm"; path = "../../JuceLibraryCode/include_juce_dsp.mm"; sourceTree = "SOURCE_ROOT"; };
 		DF57CE127AE7C32122452978 = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MainComponent.h; path = ../../Source/MainComponent.h; sourceTree = "SOURCE_ROOT"; };
 		E0DBFF70017F92B852162E9A = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_audio_basics"; path = "/Applications/JUCE/modules/juce_audio_basics"; sourceTree = "<absolute>"; };
+		E5EC4711FF0EB14E2D5AA957 = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_dsp"; path = "/Applications/JUCE/modules/juce_dsp"; sourceTree = "<absolute>"; };
 		F46709F40EE95202A00CAED3 = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JuceHeader.h; path = ../../JuceLibraryCode/JuceHeader.h; sourceTree = "SOURCE_ROOT"; };
 		F5DC9CCA7C4FA67583DC80FA = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "include_juce_audio_formats.mm"; path = "../../JuceLibraryCode/include_juce_audio_formats.mm"; sourceTree = "SOURCE_ROOT"; };
 		F70B33CB9E8AC6F58D819111 = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_audio_utils"; path = "/Applications/JUCE/modules/juce_audio_utils"; sourceTree = "<absolute>"; };
@@ -106,6 +109,7 @@
 					A09296CB00EAB9AEA871E0E2,
 					3BB0C28A28770473AACEAA6A,
 					CDED6AF18B8D60491EE8B82D,
+					E5EC4711FF0EB14E2D5AA957,
 					831518B1767EB6C6C78F27FD,
 					8767CF2153C25B28DA1E77A1,
 					2FA343414CCEF7D9065C78DB,
@@ -123,6 +127,7 @@
 					1DB134AB31312493E9362609,
 					79E517057A91E981969FDF17,
 					7060E40AF6865B4C307F955C,
+					DD48A74191E3FD5D5FDDE713,
 					6EACDB41CE4D0FC85F029F19,
 					8106F4971D281487B08FBD82,
 					13B1EB660502035B93985C23,
@@ -159,7 +164,7 @@
 					986D63621DCC5D6D6315602A,
 					FDA63C24658E0935A21BEAE1, ); name = Source; sourceTree = "<group>"; };
 		32AD6C97DE1905D469C4ABC2 = {isa = XCBuildConfiguration; buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_LINK_OBJC_RUNTIME = NO;
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
@@ -192,7 +197,7 @@
 				SDKROOT_ppc = macosx10.5;
 				USE_HEADERMAP = NO; }; name = Debug; };
 		96FABA2F7A99DE1901F40CE2 = {isa = XCBuildConfiguration; buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_LINK_OBJC_RUNTIME = NO;
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
@@ -319,6 +324,7 @@
 					44764AB25E0F4B5ACDF9E3E0,
 					7D67F6E71C901E15BCA2FD5D,
 					AA1756D91AB37748D3B2D256,
+					21E7B92AA77A63952204ABBD,
 					05B170EDE045F280941F95F3,
 					0615FEFD506EB70D5618BB77,
 					459B8A656ECD0E28994F7D48,
