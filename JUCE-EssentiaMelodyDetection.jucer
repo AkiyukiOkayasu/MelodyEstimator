@@ -19,11 +19,13 @@
         <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="JUCE-EssentiaMelodyDetection"
                        headerPath="$(SRCROOT)/../../EssentiaLightweightStaticLibrary/include"
                        libraryPath="$(SRCROOT)/../../EssentiaLightweightStaticLibrary/lib"
-                       enablePluginBinaryCopyStep="1"/>
+                       enablePluginBinaryCopyStep="1" osxSDK="default" osxCompatibility="default"
+                       osxArchitecture="default"/>
         <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="JUCE-EssentiaMelodyDetection"
                        headerPath="$(SRCROOT)/../../EssentiaLightweightStaticLibrary/include"
                        libraryPath="$(SRCROOT)/../../EssentiaLightweightStaticLibrary/lib"
-                       enablePluginBinaryCopyStep="1"/>
+                       enablePluginBinaryCopyStep="1" osxSDK="default" osxCompatibility="default"
+                       osxArchitecture="default"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../../Applications/JUCE/modules"/>
