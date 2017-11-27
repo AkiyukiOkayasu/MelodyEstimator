@@ -39,7 +39,7 @@ private:
     //==============================================================================
     void sendOSC(String oscAddress, int value);
     void sendMIDI(int noteNumber);
-    bool isLouder_RMS(std::vector<float> &buffer, const float threshold_dB);
+    float computeRMS(std::vector<float> &buffer);
     
     static const int lengthToDetectMelody_sample = 8192;//8192サンプルごとにメロディー推定を行う
     

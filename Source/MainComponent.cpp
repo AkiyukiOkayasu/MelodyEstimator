@@ -217,14 +217,12 @@ void MainContentComponent::sendMIDI(int noteNumber)
     midiOut->sendMessageNow(midiMessage);
 }
 
-bool MainContentComponent::isLouder_RMS(std::vector<float> &buffer, const float threshold_dB)
+float MainContentComponent::computeRMS(std::vector<float> &buffer)
 {
-    //入力のRMSレベルが閾値を上回っているかを判定する
-    //buffer:入力音声AudioSampleBufferなど
-    //threshold:閾値(dB)
+    //入力のRMSレベルを算出する
     double rmsLevel = 0;
     std::for_each(std::begin(buffer), std::end(buffer), [&rmsLevel](float x) mutable {rmsLevel += x * x;});
     rmsLevel = rmsLevel / (double)buffer.size();
     rmsLevel = std::sqrt(rmsLevel);
-    return rmsLevel > Decibels::decibelsToGain(threshold_dB);
+    return Decibels::gainToDecibels(rmsLevel);
 }
