@@ -6,4 +6,4 @@
 */
 
 #include "AppConfig.h"
-#include <juce_video/juce_video.mm>
+#include <juce_dsp/juce_dsp.mm>

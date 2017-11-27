@@ -20,7 +20,6 @@ MainContentComponent::MainContentComponent()
     essentia::standard::AlgorithmFactory& factory = essentia::standard::AlgorithmFactory::instance();
     melodyDetection = factory.create("PredominantPitchMelodia", "minFrequency", (essentia::Real)220.0f, "maxFrequency", (essentia::Real)7040.0f, "voicingTolerance", -0.7f);//voicingToleranceパラメータは要調整 [-1.0~1.4] default:0.2(反応のしやすさ的なパラメータ)
     pitchfilter = factory.create("PitchFilter", "confidenceThreshold", 36, "minChunkSize", 30);
-    equalloudness = factory.create("EqualLoudness");
     std::cout<<"Essentia: algorithm created"<<std::endl;
     
     essentiaInput.reserve(lengthToDetectMelody_sample);
@@ -28,8 +27,6 @@ MainContentComponent::MainContentComponent()
     essentiaPitch.reserve(200);
     essentiaPitchConfidence.reserve(200);
     essentiaFreq.reserve(200);
-    equalloudness->input("signal").set(essentiaInput);
-    equalloudness->output("signal").set(essentiaInput);
     melodyDetection->input("signal").set(essentiaInput);
     melodyDetection->output("pitch").set(essentiaPitch);
     melodyDetection->output("pitchConfidence").set(essentiaPitchConfidence);
@@ -86,18 +83,18 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
         
         if (essentiaInput.size() >= lengthToDetectMelody_sample)
         {
-            if (!isLouder_RMS(essentiaInput, noiseGateThreshold.getValue())) continue;
-            
-            equalloudness->compute();
             melodyDetection->compute();
             melodyDetection->reset();//compute()あとにreset()は必ず呼ぶこと
             pitchfilter->compute();
+         
+            const float RMSlevel = computeRMS(essentiaInput);
+            essentiaInput.clear();
+            if (RMSlevel < noiseGateThreshold.getValue()) continue;
             
-            //周波数->クロマチック変換(C~Bが0~11にマッピングされる)
+            //周波数->MIDIノート変換
             auto freqToNote = [](float hz)->int{
                 return hz >= 20.0 ? std::nearbyint(69.0 + 12.0 * log2(hz / 440.0)): -1;//20Hz以下の時は-1を返す
             };
-            
             std::vector<int> noteArray(essentiaFreq.size(), -1);
             std::transform(essentiaFreq.begin(), essentiaFreq.end(), std::back_inserter(noteArray), freqToNote);
             
@@ -115,8 +112,6 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
                     sendMIDI(lastNote);
                 }
             }
-            
-            essentiaInput.clear();
         }
     }
 }
@@ -218,14 +213,12 @@ void MainContentComponent::sendMIDI(int noteNumber)
     midiOut->sendMessageNow(midiMessage);
 }
 
-bool MainContentComponent::isLouder_RMS(std::vector<float> &buffer, const float threshold_dB)
+float MainContentComponent::computeRMS(std::vector<float> &buffer)
 {
-    //入力のRMSレベルが閾値を上回っているかを判定する
-    //buffer:入力音声AudioSampleBufferなど
-    //threshold:閾値(dB)
+    //入力のRMSレベルを算出する
     double rmsLevel = 0;
     std::for_each(std::begin(buffer), std::end(buffer), [&rmsLevel](float x) mutable {rmsLevel += x * x;});
     rmsLevel = rmsLevel / (double)buffer.size();
     rmsLevel = std::sqrt(rmsLevel);
-    return rmsLevel > Decibels::decibelsToGain(threshold_dB);
+    return Decibels::gainToDecibels(rmsLevel);
 }
