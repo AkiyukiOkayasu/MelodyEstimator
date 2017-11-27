@@ -20,7 +20,6 @@ MainContentComponent::MainContentComponent()
     essentia::standard::AlgorithmFactory& factory = essentia::standard::AlgorithmFactory::instance();
     melodyDetection = factory.create("PredominantPitchMelodia", "minFrequency", (essentia::Real)220.0f, "maxFrequency", (essentia::Real)7040.0f, "voicingTolerance", -0.7f);//voicingToleranceパラメータは要調整 [-1.0~1.4] default:0.2(反応のしやすさ的なパラメータ)
     pitchfilter = factory.create("PitchFilter", "confidenceThreshold", 36, "minChunkSize", 30);
-    equalloudness = factory.create("EqualLoudness");
     std::cout<<"Essentia: algorithm created"<<std::endl;
     
     essentiaInput.reserve(lengthToDetectMelody_sample);
@@ -28,8 +27,6 @@ MainContentComponent::MainContentComponent()
     essentiaPitch.reserve(200);
     essentiaPitchConfidence.reserve(200);
     essentiaFreq.reserve(200);
-    equalloudness->input("signal").set(essentiaInput);
-    equalloudness->output("signal").set(essentiaInput);
     melodyDetection->input("signal").set(essentiaInput);
     melodyDetection->output("pitch").set(essentiaPitch);
     melodyDetection->output("pitchConfidence").set(essentiaPitchConfidence);
@@ -88,7 +85,6 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
         {
             if (!isLouder_RMS(essentiaInput, noiseGateThreshold.getValue())) continue;
             
-            equalloudness->compute();
             melodyDetection->compute();
             melodyDetection->reset();//compute()あとにreset()は必ず呼ぶこと
             pitchfilter->compute();

@@ -33,7 +33,6 @@ public:
     std::vector<essentia::Real> essentiaFreq;
     essentia::standard::Algorithm* melodyDetection;
     essentia::standard::Algorithm* pitchfilter;
-    essentia::standard::Algorithm* equalloudness;
     
 private:
     //==============================================================================
