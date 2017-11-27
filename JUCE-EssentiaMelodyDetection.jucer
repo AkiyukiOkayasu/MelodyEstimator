@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="B5zO5T" name="JUCE-EssentiaMelodyDetection" displaySplashScreen="0"
               reportAppUsage="0" splashScreenColour="Dark" projectType="guiapp"
-              version="0.4.2" bundleIdentifier="net.tkrworks.JUCEEssentiaMelodyDetection"
+              version="0.4.5" bundleIdentifier="net.tkrworks.JUCEEssentiaMelodyDetection"
               includeBinaryInAppConfig="1" cppLanguageStandard="14" jucerVersion="5.2.0"
               companyCopyright="">
   <MAINGROUP id="vzmZaj" name="JUCE-EssentiaMelodyDetection">
