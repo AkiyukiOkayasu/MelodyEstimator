@@ -5,7 +5,6 @@
 #include <essentia/essentia.h>
 #include <essentia/algorithmfactory.h>
 #include <essentia/essentiamath.h>
-#include <essentia/pool.h>
 
 class MainContentComponent :
 public AudioAppComponent,
