@@ -83,11 +83,13 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
         
         if (essentiaInput.size() >= lengthToDetectMelody_sample)
         {
-            if (!isLouder_RMS(essentiaInput, noiseGateThreshold.getValue())) continue;
-            
             melodyDetection->compute();
             melodyDetection->reset();//compute()あとにreset()は必ず呼ぶこと
             pitchfilter->compute();
+         
+            const float RMSlevel = computeRMS(essentiaInput);
+            essentiaInput.clear();
+            if (RMSlevel < noiseGateThreshold.getValue()) continue;
             
             //周波数->MIDIノート変換
             auto freqToNote = [](float hz)->int{
@@ -110,8 +112,6 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
                     sendMIDI(lastNote);
                 }
             }
-            
-            essentiaInput.clear();
         }
     }
 }
