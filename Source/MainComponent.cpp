@@ -93,11 +93,10 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
             melodyDetection->reset();//compute()あとにreset()は必ず呼ぶこと
             pitchfilter->compute();
             
-            //周波数->クロマチック変換(C~Bが0~11にマッピングされる)
+            //周波数->MIDIノート変換
             auto freqToNote = [](float hz)->int{
                 return hz >= 20.0 ? std::nearbyint(69.0 + 12.0 * log2(hz / 440.0)): -1;//20Hz以下の時は-1を返す
             };
-            
             std::vector<int> noteArray(essentiaFreq.size(), -1);
             std::transform(essentiaFreq.begin(), essentiaFreq.end(), std::back_inserter(noteArray), freqToNote);
             
