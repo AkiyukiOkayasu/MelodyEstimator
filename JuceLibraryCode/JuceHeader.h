@@ -39,8 +39,8 @@
 #if ! JUCE_DONT_DECLARE_PROJECTINFO
 namespace ProjectInfo
 {
-    const char* const  projectName    = "JUCE-EssentiaMelodyDetection";
-    const char* const  versionString  = "0.4.6";
-    const int          versionNumber  = 0x406;
+    const char* const  projectName    = "MelodyEstimator";
+    const char* const  versionString  = "0.5.0";
+    const int          versionNumber  = 0x500;
 }
 #endif

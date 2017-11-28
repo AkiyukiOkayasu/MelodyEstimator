@@ -20,7 +20,7 @@ MainContentComponent::MainContentComponent()
     //Essentia
     essentia::init();
     essentia::standard::AlgorithmFactory& factory = essentia::standard::AlgorithmFactory::instance();
-    melodyDetection = factory.create("PredominantPitchMelodia", "minFrequency", (essentia::Real)220.0f, "maxFrequency", (essentia::Real)7040.0f, "voicingTolerance", -0.7f);//voicingToleranceパラメータは要調整 [-1.0~1.4] default:0.2(反応のしやすさ的なパラメータ)
+    melodyEstimate = factory.create("PredominantPitchMelodia", "minFrequency", 220.0f, "maxFrequency", 7040.0f, "voicingTolerance", -0.7f);//voicingToleranceパラメータは要調整 [-1.0~1.4] default:0.2(反応のしやすさ的なパラメータ)
     pitchfilter = factory.create("PitchFilter", "confidenceThreshold", 36, "minChunkSize", 30);
     std::cout<<"Essentia: algorithm created"<<std::endl;
     
@@ -29,9 +29,9 @@ MainContentComponent::MainContentComponent()
     essentiaPitch.reserve(200);
     essentiaPitchConfidence.reserve(200);
     essentiaFreq.reserve(200);
-    melodyDetection->input("signal").set(essentiaInput);
-    melodyDetection->output("pitch").set(essentiaPitch);
-    melodyDetection->output("pitchConfidence").set(essentiaPitchConfidence);
+    melodyEstimate->input("signal").set(essentiaInput);
+    melodyEstimate->output("pitch").set(essentiaPitch);
+    melodyEstimate->output("pitchConfidence").set(essentiaPitchConfidence);
     pitchfilter->input("pitch").set(essentiaPitch);
     pitchfilter->input("pitchConfidence").set(essentiaPitchConfidence);
     pitchfilter->output("pitchFiltered").set(essentiaFreq);
@@ -96,7 +96,7 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
                 essentiaInput.emplace_back(preBuffer[i]);
             }
             
-            supposeMelody();
+            estimateMelody();
             essentiaInput.clear();
         }
         
@@ -207,10 +207,10 @@ void MainContentComponent::sendMIDI(int noteNumber)
     midiOut->sendMessageNow(midiMessage);
 }
 
-void MainContentComponent::supposeMelody()
+void MainContentComponent::estimateMelody()
 {
-    melodyDetection->compute();
-    melodyDetection->reset();//compute()あとにreset()は必ず呼ぶこと
+    melodyEstimate->compute();
+    melodyEstimate->reset();//compute()あとにreset()は必ず呼ぶこと
     pitchfilter->compute();
     
     //周波数->MIDIノート変換

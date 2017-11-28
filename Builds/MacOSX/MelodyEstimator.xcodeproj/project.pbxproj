@@ -40,7 +40,7 @@
 		1DB134AB31312493E9362609 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "include_juce_core.mm"; path = "../../JuceLibraryCode/include_juce_core.mm"; sourceTree = "SOURCE_ROOT"; };
 		220C51680C150472772C1194 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "include_juce_audio_devices.mm"; path = "../../JuceLibraryCode/include_juce_audio_devices.mm"; sourceTree = "SOURCE_ROOT"; };
 		2FA343414CCEF7D9065C78DB = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_gui_basics"; path = "/Applications/JUCE/modules/juce_gui_basics"; sourceTree = "<absolute>"; };
-		2FDCDA665A156F9C707F81FA = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "JUCE-EssentiaMelodyDetection.app"; sourceTree = "BUILT_PRODUCTS_DIR"; };
+		2FDCDA665A156F9C707F81FA = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MelodyEstimator.app; sourceTree = "BUILT_PRODUCTS_DIR"; };
 		3BB0C28A28770473AACEAA6A = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_cryptography"; path = "/Applications/JUCE/modules/juce_cryptography"; sourceTree = "<absolute>"; };
 		44DDFB0E3FCE5DF08B4CD725 = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		4AE87084F69279961B17A7E5 = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_audio_processors"; path = "/Applications/JUCE/modules/juce_audio_processors"; sourceTree = "<absolute>"; };
@@ -85,7 +85,7 @@
 					DF57CE127AE7C32122452978,
 					8E9C2F25FD010E15B27F19C1, ); name = Source; sourceTree = "<group>"; };
 		DB201E6197286D912AD4E6C2 = {isa = PBXGroup; children = (
-					87244A938569FC2264CC6C56, ); name = "JUCE-EssentiaMelodyDetection"; sourceTree = "<group>"; };
+					87244A938569FC2264CC6C56, ); name = MelodyEstimator; sourceTree = "<group>"; };
 		85B4CD5AF3905BE127710E92 = {isa = PBXGroup; children = (
 					E0DBFF70017F92B852162E9A,
 					0F6929381E86C900815421F7,
@@ -153,8 +153,8 @@
 					"_DEBUG=1",
 					"DEBUG=1",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
-					"JUCE_APP_VERSION=0.4.6",
-					"JUCE_APP_VERSION_HEX=0x406",
+					"JUCE_APP_VERSION=0.5.0",
+					"JUCE_APP_VERSION_HEX=0x500",
 					"JucePlugin_Build_VST=0",
 					"JucePlugin_Build_VST3=0",
 					"JucePlugin_Build_AU=0",
@@ -171,7 +171,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MACOSX_DEPLOYMENT_TARGET_ppc = 10.4;
 				OTHER_LDFLAGS = "-lessentia";
-				PRODUCT_BUNDLE_IDENTIFIER = net.tkrworks.JUCEEssentiaMelodyDetection;
+				PRODUCT_BUNDLE_IDENTIFIER = net.tkrworks.MelodyEstimator;
 				SDKROOT_ppc = macosx10.5;
 				USE_HEADERMAP = NO; }; name = Debug; };
 		96FABA2F7A99DE1901F40CE2 = {isa = XCBuildConfiguration; buildSettings = {
@@ -186,8 +186,8 @@
 					"_NDEBUG=1",
 					"NDEBUG=1",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
-					"JUCE_APP_VERSION=0.4.6",
-					"JUCE_APP_VERSION_HEX=0x406",
+					"JUCE_APP_VERSION=0.5.0",
+					"JUCE_APP_VERSION_HEX=0x500",
 					"JucePlugin_Build_VST=0",
 					"JucePlugin_Build_VST3=0",
 					"JucePlugin_Build_AU=0",
@@ -205,7 +205,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MACOSX_DEPLOYMENT_TARGET_ppc = 10.4;
 				OTHER_LDFLAGS = "-lessentia";
-				PRODUCT_BUNDLE_IDENTIFIER = net.tkrworks.JUCEEssentiaMelodyDetection;
+				PRODUCT_BUNDLE_IDENTIFIER = net.tkrworks.MelodyEstimator;
 				SDKROOT_ppc = macosx10.5;
 				USE_HEADERMAP = NO; }; name = Release; };
 		A61D93A5AB6E5BB8A7A31C5A = {isa = XCBuildConfiguration; buildSettings = {
@@ -243,7 +243,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_NAME = "JUCE-EssentiaMelodyDetection";
+				PRODUCT_NAME = "MelodyEstimator";
 				WARNING_CFLAGS = -Wreorder;
 				ZERO_LINK = NO; }; name = Debug; };
 		8371DB3D860811D7D6CA0DDE = {isa = XCBuildConfiguration; buildSettings = {
@@ -279,7 +279,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				PRODUCT_NAME = "JUCE-EssentiaMelodyDetection";
+				PRODUCT_NAME = "MelodyEstimator";
 				WARNING_CFLAGS = -Wreorder;
 				ZERO_LINK = NO; }; name = Release; };
 		814C04603783381E31AF58AF = {isa = PBXTargetDependency; target = 0CB181B58F6ED0426710581E; };
@@ -322,7 +322,7 @@
 		0CB181B58F6ED0426710581E = {isa = PBXNativeTarget; buildConfigurationList = B59CFD01280239CEAE73E81C; buildPhases = (
 					BFFBA9EBD5AB1BC48CDCEFAF,
 					1636B0552C13530ED595F0CF,
-					6405BE859D555D504F2313A9, ); buildRules = ( ); dependencies = (  ); name = "JUCE-EssentiaMelodyDetection - App"; productName = "JUCE-EssentiaMelodyDetection"; productReference = 2FDCDA665A156F9C707F81FA; productType = "com.apple.product-type.application"; };
+					6405BE859D555D504F2313A9, ); buildRules = ( ); dependencies = (  ); name = "MelodyEstimator - App"; productName = MelodyEstimator; productReference = 2FDCDA665A156F9C707F81FA; productType = "com.apple.product-type.application"; };
 		E61FB12DDC8BBD38B0340BFA = {isa = PBXProject; buildConfigurationList = 2AF356519AB1729D71B066BA; attributes = { LastUpgradeCheck = 0830; TargetAttributes = { 0CB181B58F6ED0426710581E = { SystemCapabilities = {com.apple.ApplicationGroups.iOS = { enabled = 0; }; com.apple.InAppPurchase = { enabled = 0; }; com.apple.InterAppAudio = { enabled = 0; }; com.apple.Push = { enabled = 0; }; com.apple.Sandbox = { enabled = 0; }; }; }; }; }; compatibilityVersion = "Xcode 3.2"; hasScannedForEncodings = 0; mainGroup = 34D75DFA77F360AD444CA1A9; projectDirPath = ""; projectRoot = ""; targets = (0CB181B58F6ED0426710581E); };
 	};
 	rootObject = E61FB12DDC8BBD38B0340BFA;

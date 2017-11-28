@@ -13,11 +13,11 @@
 Component* createMainContentComponent();
 
 //==============================================================================
-class JUCEEssentiaMelodyDetectionApplication  : public JUCEApplication
+class MelodyEstimator  : public JUCEApplication
 {
 public:
     //==============================================================================
-    JUCEEssentiaMelodyDetectionApplication() {}
+    MelodyEstimator() {}
 
     const String getApplicationName() override       { return ProjectInfo::projectName; }
     const String getApplicationVersion() override    { return ProjectInfo::versionString; }
@@ -99,4 +99,4 @@ private:
 
 //==============================================================================
 // This macro generates the main() routine that launches the app.
-START_JUCE_APPLICATION (JUCEEssentiaMelodyDetectionApplication)
+START_JUCE_APPLICATION (MelodyEstimator)

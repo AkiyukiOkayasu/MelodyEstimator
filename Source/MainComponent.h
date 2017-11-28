@@ -31,14 +31,14 @@ public:
     std::vector<essentia::Real> essentiaPitch;
     std::vector<essentia::Real> essentiaPitchConfidence;
     std::vector<essentia::Real> essentiaFreq;
-    essentia::standard::Algorithm* melodyDetection;
+    essentia::standard::Algorithm* melodyEstimate;
     essentia::standard::Algorithm* pitchfilter;
     
 private:
     //==============================================================================
     void sendOSC(String oscAddress, int value);
     void sendMIDI(int noteNumber);
-    void supposeMelody();
+    void estimateMelody();
     
     static const int lengthToDetectMelody_sample = 8192;//8192サンプルごとにメロディー推定を行う
     struct bufferAndIndex{
