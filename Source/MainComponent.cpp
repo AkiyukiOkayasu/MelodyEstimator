@@ -239,13 +239,3 @@ void MainContentComponent::sendMIDI(int noteNumber)
     midiMessage = MidiMessage::noteOn(midiChannel, noteNumber, (uint8)127);
     midiOut->sendMessageNow(midiMessage);
 }
-
-float MainContentComponent::computeRMS(std::vector<float> &buffer)
-{
-    //入力のRMSレベルを算出する
-    double rmsLevel = 0;
-    std::for_each(std::begin(buffer), std::end(buffer), [&rmsLevel](float x) mutable {rmsLevel += x * x;});
-    rmsLevel = rmsLevel / (double)buffer.size();
-    rmsLevel = std::sqrt(rmsLevel);
-    return Decibels::gainToDecibels(rmsLevel);
-}
