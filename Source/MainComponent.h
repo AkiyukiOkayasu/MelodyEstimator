@@ -51,7 +51,7 @@ private:
     OSCSender oscSender;
     const String ip = "127.0.0.1";
     static const int port = 8080;
-    const String oscAddress_note = "/melodyDetection/note";
+    const String oscAddress_note = "/melodyEstimator/note";
     
     //MIDI
     static const int midiChannel = 1;
