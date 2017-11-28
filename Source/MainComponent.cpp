@@ -2,6 +2,8 @@
 
 MainContentComponent::MainContentComponent()
 {
+    preApplyEssentia.buffer.setSize(1, lengthToDetectMelody_sample);
+    
     setMacMainMenu(this);
     
     //GUI Noise gate
@@ -75,43 +77,29 @@ void MainContentComponent::prepareToPlay (int samplesPerBlockExpected, double sa
 
 void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& bufferToFill)
 {
-    const float* input = bufferToFill.buffer->getReadPointer(0);
-    
-    for (int samples = 0; samples < bufferToFill.buffer->getNumSamples(); ++samples)
+    if(preApplyEssentia.index + bufferToFill.buffer->getNumSamples() < lengthToDetectMelody_sample)
     {
-        essentiaInput.emplace_back((essentia::Real)input[samples]);
-        
-        if (essentiaInput.size() >= lengthToDetectMelody_sample)
+        preApplyEssentia.buffer.copyFrom(0, preApplyEssentia.index, *bufferToFill.buffer, 0, 0, bufferToFill.buffer->getNumSamples());
+        preApplyEssentia.index += bufferToFill.buffer->getNumSamples();
+    }
+    else
+    {
+        const int remains = lengthToDetectMelody_sample - preApplyEssentia.index;
+        preApplyEssentia.buffer.copyFrom(0, preApplyEssentia.index, *bufferToFill.buffer, 0, 0, remains);
+        const float RMSlevel_dB = Decibels::gainToDecibels(preApplyEssentia.buffer.getRMSLevel(0, 0, preApplyEssentia.buffer.getNumSamples()));
+        if(RMSlevel_dB > noiseGateThreshold.getValue())
         {
-            melodyDetection->compute();
-            melodyDetection->reset();//compute()あとにreset()は必ず呼ぶこと
-            pitchfilter->compute();
-         
-            const float RMSlevel = computeRMS(essentiaInput);
-            essentiaInput.clear();
-            if (RMSlevel < noiseGateThreshold.getValue()) continue;
-            
-            //周波数->MIDIノート変換
-            auto freqToNote = [](float hz)->int{
-                return hz >= 20.0 ? std::nearbyint(69.0 + 12.0 * log2(hz / 440.0)): -1;//20Hz以下の時は-1を返す
-            };
-            std::vector<int> noteArray(essentiaFreq.size(), -1);
-            std::transform(essentiaFreq.begin(), essentiaFreq.end(), std::back_inserter(noteArray), freqToNote);
-            
-            const int numConsecutive = 10;
-            for (int i = 0; i < noteArray.size() - numConsecutive; ++i)
-            {
-                const int target = noteArray[i];
-                if  (target == -1 || target == lastNote) continue;
-                
-                bool isSame = std::all_of(noteArray.begin() + i, noteArray.begin() + i + numConsecutive, [target](int x){return x == target;});
-                if (isSame)
-                {
-                    lastNote = target;
-                    sendOSC(oscAddress_note, lastNote);
-                    sendMIDI(lastNote);
-                }
-            }
+            /*
+             Essentiaの処理色々
+            */
+        }
+        
+        preApplyEssentia.index = 0;
+        const int n = bufferToFill.buffer->getNumSamples() - remains;
+        if(n > 0)
+        {
+            preApplyEssentia.buffer.copyFrom(0, preApplyEssentia.index, *bufferToFill.buffer, 0, remains, n);
+            preApplyEssentia.index += n;
         }
     }
     
