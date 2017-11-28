@@ -81,8 +81,8 @@
 		FBC0AB41DB649FC67C027102 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MainComponent.cpp; path = ../../Source/MainComponent.cpp; sourceTree = "SOURCE_ROOT"; };
 		FD319D4A2ED0CD38136E0047 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = "include_juce_osc.cpp"; path = "../../JuceLibraryCode/include_juce_osc.cpp"; sourceTree = "SOURCE_ROOT"; };
 		87244A938569FC2264CC6C56 = {isa = PBXGroup; children = (
-					DF57CE127AE7C32122452978,
 					FBC0AB41DB649FC67C027102,
+					DF57CE127AE7C32122452978,
 					8E9C2F25FD010E15B27F19C1, ); name = Source; sourceTree = "<group>"; };
 		DB201E6197286D912AD4E6C2 = {isa = PBXGroup; children = (
 					87244A938569FC2264CC6C56, ); name = "JUCE-EssentiaMelodyDetection"; sourceTree = "<group>"; };
