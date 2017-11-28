@@ -42,7 +42,7 @@ private:
     static const int lengthToDetectMelody_sample = 8192;//8192サンプルごとにメロディー推定を行う
     struct bufferAndIndex{
         AudioSampleBuffer buffer;//Essentiaでメロディー推定するための直近8192サンプルを保持するバッファー
-        int index;
+        int index = 0;
     };
     bufferAndIndex preApplyEssentia;
     
