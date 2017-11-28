@@ -18,12 +18,12 @@
         <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="MelodyEstimator"
                        headerPath="$(SRCROOT)/../../EssentiaLightweightStaticLibrary/include"
                        libraryPath="$(SRCROOT)/../../EssentiaLightweightStaticLibrary/lib"
-                       enablePluginBinaryCopyStep="1" osxSDK="default" osxCompatibility="default"
+                       enablePluginBinaryCopyStep="1" osxSDK="default" osxCompatibility="10.12 SDK"
                        osxArchitecture="default"/>
         <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="MelodyEstimator"
                        headerPath="$(SRCROOT)/../../EssentiaLightweightStaticLibrary/include"
                        libraryPath="$(SRCROOT)/../../EssentiaLightweightStaticLibrary/lib"
-                       enablePluginBinaryCopyStep="1" osxSDK="default" osxCompatibility="default"
+                       enablePluginBinaryCopyStep="1" osxSDK="default" osxCompatibility="10.12 SDK"
                        osxArchitecture="default"/>
       </CONFIGURATIONS>
       <MODULEPATHS>

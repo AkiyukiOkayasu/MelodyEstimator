@@ -168,7 +168,7 @@
 				INFOPLIST_PREPROCESS = NO;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = ("$(inherited)", "\"$(SRCROOT)/../../EssentiaLightweightStaticLibrary/lib\"");
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MACOSX_DEPLOYMENT_TARGET_ppc = 10.4;
 				OTHER_LDFLAGS = "-lessentia";
 				PRODUCT_BUNDLE_IDENTIFIER = net.tkrworks.MelodyEstimator;
@@ -202,7 +202,7 @@
 				INFOPLIST_PREPROCESS = NO;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = ("$(inherited)", "\"$(SRCROOT)/../../EssentiaLightweightStaticLibrary/lib\"");
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MACOSX_DEPLOYMENT_TARGET_ppc = 10.4;
 				OTHER_LDFLAGS = "-lessentia";
 				PRODUCT_BUNDLE_IDENTIFIER = net.tkrworks.MelodyEstimator;
