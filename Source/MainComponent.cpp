@@ -2,8 +2,6 @@
 
 MainContentComponent::MainContentComponent()
 {
-    preApplyEssentia.buffer.setSize(1, lengthToDetectMelody_sample);
-    
     setMacMainMenu(this);
     
     //GUI Noise gate
@@ -16,6 +14,8 @@ MainContentComponent::MainContentComponent()
     addAndMakeVisible(noiseGateLabel);
     noiseGateLabel.setText("Noise Gate Threshold", NotificationType::dontSendNotification);
     noiseGateLabel.attachToComponent(&noiseGateThreshold, false);
+    
+    preApplyEssentia.buffer.setSize(1, lengthToDetectMelody_sample);
     
     //Essentia
     essentia::init();
@@ -77,6 +77,7 @@ void MainContentComponent::prepareToPlay (int samplesPerBlockExpected, double sa
 
 void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& bufferToFill)
 {
+    
     if(preApplyEssentia.index + bufferToFill.buffer->getNumSamples() < lengthToDetectMelody_sample)
     {
         preApplyEssentia.buffer.copyFrom(0, preApplyEssentia.index, *bufferToFill.buffer, 0, 0, bufferToFill.buffer->getNumSamples());
