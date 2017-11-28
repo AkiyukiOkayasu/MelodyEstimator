@@ -90,9 +90,14 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
         const float RMSlevel_dB = Decibels::gainToDecibels(preApplyEssentia.buffer.getRMSLevel(0, 0, preApplyEssentia.buffer.getNumSamples()));
         if(RMSlevel_dB > noiseGateThreshold.getValue())
         {
-            /*
-             Essentiaの処理色々
-            */
+            const float* preBuffer = preApplyEssentia.buffer.getReadPointer(0);
+            for(int i = 0; i < lengthToDetectMelody_sample; ++i)
+            {
+                essentiaInput.emplace_back(preBuffer[i]);
+            }
+            
+            supposeMelody();
+            essentiaInput.clear();
         }
         
         preApplyEssentia.index = 0;
@@ -201,3 +206,34 @@ void MainContentComponent::sendMIDI(int noteNumber)
     midiMessage = MidiMessage::noteOn(midiChannel, noteNumber, (uint8)127);
     midiOut->sendMessageNow(midiMessage);
 }
+
+void MainContentComponent::supposeMelody()
+{
+    melodyDetection->compute();
+    melodyDetection->reset();//compute()あとにreset()は必ず呼ぶこと
+    pitchfilter->compute();
+    
+    //周波数->MIDIノート変換
+    auto freqToNote = [](float hz)->int{
+        return hz >= 20.0 ? std::nearbyint(69.0 + 12.0 * log2(hz / 440.0)): -1;//20Hz以下の時は-1を返す
+    };
+    std::vector<int> noteArray(essentiaFreq.size(), -1);
+    std::transform(essentiaFreq.begin(), essentiaFreq.end(), std::back_inserter(noteArray), freqToNote);
+    
+    const int numConsecutive = 10;
+    for (int i = 0; i < noteArray.size() - numConsecutive; ++i)
+    {
+        const int target = noteArray[i];
+        if  (target != -1 && target != lastNote)
+        {
+            bool isEnoughConsecutive = std::all_of(noteArray.begin() + i, noteArray.begin() + i + numConsecutive, [target](int x){return x == target;});
+            if (isEnoughConsecutive)
+            {
+                lastNote = target;
+                sendOSC(oscAddress_note, lastNote);
+                sendMIDI(lastNote);
+            }
+        }
+    }
+}
+

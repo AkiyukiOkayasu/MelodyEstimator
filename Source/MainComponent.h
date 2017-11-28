@@ -38,6 +38,7 @@ private:
     //==============================================================================
     void sendOSC(String oscAddress, int value);
     void sendMIDI(int noteNumber);
+    void supposeMelody();
     
     static const int lengthToDetectMelody_sample = 8192;//8192サンプルごとにメロディー推定を行う
     struct bufferAndIndex{
