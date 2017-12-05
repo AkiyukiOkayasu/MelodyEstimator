@@ -9,7 +9,8 @@
 class MainContentComponent :
 public AudioAppComponent,
 public MenuBarModel,
-public Slider::Listener
+public Slider::Listener,
+public ComboBox::Listener
 {
 public:
     MainContentComponent();
@@ -22,6 +23,7 @@ public:
     void paint (Graphics& g) override;
     void resized() override;
     void sliderValueChanged (Slider* slider) override;
+    void comboBoxChanged (ComboBox* comboBox) override;
     StringArray getMenuBarNames() override;
     PopupMenu getMenuForIndex (int topLevelMenuIndex, const String& /*menuName*/) override;
     void menuItemSelected(int menuItemID, int topLevelMenuIndex) override;
@@ -64,8 +66,10 @@ private:
     ScopedPointer<ApplicationProperties> appProperties;
     
     //小音量時にメロディー判定を行わないようにするための閾値(dB)
-    Slider noiseGateThreshold;
-    Label noiseGateLabel;
+    Slider sl_noiseGateThreshold;
+    Label lbl_noiseGate;
+    ComboBox cmb_hpf;
+    Label lbl_hpf;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
 };

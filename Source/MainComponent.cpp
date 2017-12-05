@@ -5,15 +5,34 @@ MainContentComponent::MainContentComponent()
     setMacMainMenu(this);
     
     //GUI Noise gate
-    addAndMakeVisible(noiseGateThreshold);
-    noiseGateThreshold.setRange(-72.0, 0.0, 1.0);
-    noiseGateThreshold.setTextValueSuffix("dB");
-    noiseGateThreshold.setTextBoxStyle(Slider::TextBoxLeft, false, 100, noiseGateThreshold.getTextBoxHeight());
-    noiseGateThreshold.addListener(this);
+    addAndMakeVisible(sl_noiseGateThreshold);
+    sl_noiseGateThreshold.setRange(-72.0, 0.0, 1.0);
+    sl_noiseGateThreshold.setTextValueSuffix("dB");
+    sl_noiseGateThreshold.setSliderStyle (Slider::LinearBar);
+    sl_noiseGateThreshold.setTextBoxStyle (Slider::TextBoxLeft, false, 80, sl_noiseGateThreshold.getTextBoxHeight());
+    sl_noiseGateThreshold.setColour (Slider::trackColourId, Colour::Colour(101, 167, 255));
+    sl_noiseGateThreshold.addListener(this);
     
-    addAndMakeVisible(noiseGateLabel);
-    noiseGateLabel.setText("Noise Gate Threshold", NotificationType::dontSendNotification);
-    noiseGateLabel.attachToComponent(&noiseGateThreshold, false);
+    addAndMakeVisible(lbl_noiseGate);
+    lbl_noiseGate.setText("Noise Gate Threshold", NotificationType::dontSendNotification);
+    lbl_noiseGate.attachToComponent(&sl_noiseGateThreshold, false);
+    
+    addAndMakeVisible (cmb_hpf);
+    cmb_hpf.setEditableText (false);
+    cmb_hpf.setJustificationType (Justification::centredLeft);
+    cmb_hpf.addItem (TRANS("OFF"), 1);
+    cmb_hpf.addSeparator();
+    cmb_hpf.addItem (TRANS("20Hz"), 2);
+    cmb_hpf.addItem (TRANS("40Hz"), 3);
+    cmb_hpf.addItem (TRANS("60Hz"), 4);
+    cmb_hpf.addItem (TRANS("80Hz"), 5);
+    cmb_hpf.addItem (TRANS("100Hz"), 6);
+    cmb_hpf.addItem (TRANS("120Hz"), 7);
+    cmb_hpf.addListener (this);
+    
+    addAndMakeVisible(lbl_hpf);
+    lbl_hpf.setText("High-pass Filter", NotificationType::dontSendNotification);
+    lbl_hpf.attachToComponent(&cmb_hpf, false);
     
     preApplyEssentia.buffer.setSize(1, lengthToDetectMelody_sample);
     
@@ -43,7 +62,7 @@ MainContentComponent::MainContentComponent()
     std::cout<<"MIDI port: "<<midiOut->getName()<<std::endl;
     midiOut->startBackgroundThread();
     
-    setSize (600, 130);
+    setSize (600, 170);
     
     //保存したパラメータをXMLファイルから呼び出し
     PropertiesFile::Options options;
@@ -52,10 +71,14 @@ MainContentComponent::MainContentComponent()
     options.osxLibrarySubFolder = "Preferences";
     appProperties = new ApplicationProperties();
     appProperties->setStorageParameters (options);
-    ScopedPointer<XmlElement> savedAudioState (appProperties->getUserSettings()->getXmlValue ("audioDeviceState"));//オーディオインターフェースの設定
-    ScopedPointer<XmlElement> savedNoiseGateSettings (appProperties->getUserSettings()->getXmlValue("noiseGateSettings"));//ノイズゲートの設定
+    auto userSettings = appProperties->getUserSettings();
+    ScopedPointer<XmlElement> savedAudioState (userSettings->getXmlValue ("audioDeviceState"));//オーディオインターフェースの設定
+    ScopedPointer<XmlElement> savedNoiseGateSettings (userSettings->getXmlValue("noiseGateSettings"));//ノイズゲートの設定
+    ScopedPointer<XmlElement> savedHighpassFilterSettings (userSettings->getXmlValue("highpassFilterSettings"));//ハイパスの設定
     const double thrsld = savedNoiseGateSettings ? savedNoiseGateSettings->getDoubleAttribute("threshold") : -24.0;
-    noiseGateThreshold.setValue(thrsld, NotificationType::dontSendNotification);
+    const auto hpfIndex = savedHighpassFilterSettings ? savedHighpassFilterSettings->getIntAttribute("selectedItemIndex"): 0;
+    cmb_hpf.setSelectedItemIndex(hpfIndex);
+    sl_noiseGateThreshold.setValue(thrsld, NotificationType::dontSendNotification);
     setAudioChannels (1, 0, savedAudioState);
 }
 
@@ -117,17 +140,18 @@ void MainContentComponent::releaseResources()
 //==============================================================================
 void MainContentComponent::paint (Graphics& g)
 {
-    g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
+    g.fillAll(Colour::Colour(25, 42, 64));
 }
 
 void MainContentComponent::resized()
 {
-    noiseGateThreshold.setBounds(10, 50, getWidth() - 20, 50);
+    sl_noiseGateThreshold.setBounds(20, 40, getWidth() - 40, 40);
+    cmb_hpf.setBounds(20, 120, 120, 30);
 }
 
 void MainContentComponent::sliderValueChanged (Slider* slider)
 {
-    if (slider == &noiseGateThreshold)
+    if (slider == &sl_noiseGateThreshold)
     {
         //スライダーの値をXMLで保存
         String xmltag =  "noiseGateThreshold";
