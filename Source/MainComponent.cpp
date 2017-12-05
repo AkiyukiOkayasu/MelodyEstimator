@@ -38,8 +38,8 @@ MainContentComponent::MainContentComponent()
     //Essentia
     essentia::init();
     essentia::standard::AlgorithmFactory& factory = essentia::standard::AlgorithmFactory::instance();
-    melodyEstimate = factory.create("PredominantPitchMelodia", "minFrequency", 220.0f, "maxFrequency", 7040.0f, "voicingTolerance", -0.7f);//voicingToleranceパラメータは要調整 [-1.0~1.4] default:0.2(反応のしやすさ的なパラメータ)
-    pitchfilter = factory.create("PitchFilter", "confidenceThreshold", 36, "minChunkSize", 30);
+    melodyEstimate = factory.create("PredominantPitchMelodia", "minFrequency", 220.0f, "maxFrequency", 7040.0f, "voicingTolerance", -0.9f);//voicingToleranceパラメータは要調整 [-1.0~1.4] default:0.2(反応のしやすさ的なパラメータ)
+    pitchfilter = factory.create("PitchFilter", "confidenceThreshold", 55, "minChunkSize", 35);
     std::cout<<"Essentia: algorithm created"<<std::endl;
     
     essentiaInput.reserve(lengthToDetectMelody_sample);
