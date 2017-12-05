@@ -162,6 +162,19 @@ void MainContentComponent::sliderValueChanged (Slider* slider)
     }
 }
 
+void MainContentComponent::comboBoxChanged (ComboBox* comboBox)
+{
+    if (comboBox == &cmb_hpf)
+    {
+        //スライダーの値をXMLで保存
+        String xmltag =  "highpassFilter";
+        ScopedPointer<XmlElement> highpassFilterSettings = new XmlElement(xmltag);
+        highpassFilterSettings->setAttribute("selectedItemIndex", comboBox->getSelectedItemIndex());
+        appProperties->getUserSettings()->setValue ("highpassFilterSettings", highpassFilterSettings);
+        appProperties->getUserSettings()->saveIfNeeded();
+    }
+}
+
 StringArray MainContentComponent::getMenuBarNames()
 {
     const char* const names[] = { "Settings", nullptr };
