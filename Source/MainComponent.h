@@ -41,6 +41,7 @@ private:
     void sendOSC(String oscAddress, int value);
     void sendMIDI(int noteNumber);
     void estimateMelody();
+    void computeHighpassCoefficient(const double cutoffFreq, const double sampleRate);
     
     static const int lengthToDetectMelody_sample = 8192;//8192サンプルごとにメロディー推定を行う
     struct bufferAndIndex{
@@ -70,6 +71,13 @@ private:
     Label lbl_noiseGate;
     ComboBox cmb_hpf;
     Label lbl_hpf;
+    
+    using iir = dsp::ProcessorDuplicator<dsp::IIR::Filter<float>, dsp::IIR::Coefficients<float>>;
+    struct highpassAndEnable{
+        dsp::ProcessorChain<iir, iir> processor;
+        bool enabled = false;
+    };
+    highpassAndEnable highpass;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
 };

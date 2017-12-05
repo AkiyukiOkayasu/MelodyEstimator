@@ -95,10 +95,20 @@ void MainContentComponent::prepareToPlay (int samplesPerBlockExpected, double sa
     std::cout<<"prepareToPlay()"<<std::endl;
     std::cout<<"Sample Rate: "<<sampleRate<<std::endl;
     std::cout<<"Buffer Size: "<<samplesPerBlockExpected<<std::endl;
+    
+    auto channels = static_cast<uint32>(1);//1ch
+    dsp::ProcessSpec spec {sampleRate, static_cast<uint32>(samplesPerBlockExpected), channels};
+    highpass.processor.prepare(spec);
 }
 
 void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& bufferToFill)
 {
+    if(highpass.enabled)
+    {
+        dsp::AudioBlock<float> block(*bufferToFill.buffer);
+        dsp::ProcessContextReplacing<float> context(block);
+        highpass.processor.process(context);
+    }
     
     if(preApplyEssentia.index + bufferToFill.buffer->getNumSamples() < lengthToDetectMelody_sample)
     {
@@ -133,6 +143,7 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
 
 void MainContentComponent::releaseResources()
 {
+    highpass.processor.reset();
 }
 
 //==============================================================================
@@ -164,6 +175,10 @@ void MainContentComponent::comboBoxChanged (ComboBox* comboBox)
 {
     if (comboBox == &cmb_hpf)
     {
+        const int index = comboBox->getSelectedItemIndex();
+        highpass.enabled = index > 0 ? true : false;
+        if(highpass.enabled) computeHighpassCoefficient((double)index * 20.0, deviceManager.getCurrentAudioDevice()->getCurrentSampleRate());
+        
         //スライダーの値をXMLで保存
         String xmltag =  "highpassFilter";
         ScopedPointer<XmlElement> highpassFilterSettings = new XmlElement(xmltag);
@@ -267,5 +282,15 @@ void MainContentComponent::estimateMelody()
             }
         }
     }
+}
+
+void MainContentComponent::computeHighpassCoefficient(const double cutoffFreq, const double sampleRate)
+{
+    auto firstHighpass = dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, cutoffFreq);//Q =1/sqrt(2)
+    std::cout<<"First high-pass filter Order: "<<firstHighpass->getFilterOrder()<<std::endl;
+    *highpass.processor.get<0>().state = *firstHighpass;
+    auto secondHighpass = dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, cutoffFreq);//Q =1/sqrt(2)
+    std::cout<<"Second high-pass filter Order: "<<secondHighpass->getFilterOrder()<<std::endl;
+    *highpass.processor.get<1>().state = *secondHighpass;
 }
 
