@@ -12,11 +12,11 @@ MainContentComponent::MainContentComponent()
     sl_noiseGateThreshold.setTextBoxStyle (Slider::TextBoxLeft, false, 80, sl_noiseGateThreshold.getTextBoxHeight());
     sl_noiseGateThreshold.setColour (Slider::trackColourId, Colour::Colour(101, 167, 255));
     sl_noiseGateThreshold.addListener(this);
-    
     addAndMakeVisible(lbl_noiseGate);
     lbl_noiseGate.setText("Noise Gate Threshold", NotificationType::dontSendNotification);
     lbl_noiseGate.attachToComponent(&sl_noiseGateThreshold, false);
     
+    //GUI Highpass filter
     addAndMakeVisible (cmb_hpf);
     cmb_hpf.setEditableText (false);
     cmb_hpf.setJustificationType (Justification::centredLeft);
@@ -29,7 +29,6 @@ MainContentComponent::MainContentComponent()
     cmb_hpf.addItem (TRANS("100Hz"), 6);
     cmb_hpf.addItem (TRANS("120Hz"), 7);
     cmb_hpf.addListener (this);
-    
     addAndMakeVisible(lbl_hpf);
     lbl_hpf.setText("High-pass Filter", NotificationType::dontSendNotification);
     lbl_hpf.attachToComponent(&cmb_hpf, false);
@@ -111,14 +110,13 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
         const int remains = lengthToDetectMelody_sample - preApplyEssentia.index;
         preApplyEssentia.buffer.copyFrom(0, preApplyEssentia.index, *bufferToFill.buffer, 0, 0, remains);
         const float RMSlevel_dB = Decibels::gainToDecibels(preApplyEssentia.buffer.getRMSLevel(0, 0, preApplyEssentia.buffer.getNumSamples()));
-        if(RMSlevel_dB > noiseGateThreshold.getValue())
+        if(RMSlevel_dB > sl_noiseGateThreshold.getValue())
         {
             const float* preBuffer = preApplyEssentia.buffer.getReadPointer(0);
             for(int i = 0; i < lengthToDetectMelody_sample; ++i)
             {
                 essentiaInput.emplace_back(preBuffer[i]);
             }
-            
             estimateMelody();
             essentiaInput.clear();
         }
@@ -184,10 +182,7 @@ StringArray MainContentComponent::getMenuBarNames()
 PopupMenu MainContentComponent::getMenuForIndex (int topLevelMenuIndex, const String& /*menuName*/)
 {
     PopupMenu menu;
-    if (topLevelMenuIndex == 0)
-    {
-        menu.addItem(1, "Audio Settings");
-    }
+    if (topLevelMenuIndex == 0) menu.addItem(1, "Audio Settings");
     return menu;
 }
 
