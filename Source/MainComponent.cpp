@@ -288,7 +288,7 @@ void MainContentComponent::estimateMelody()
     std::vector<int> noteArray(essentiaFreq.size(), -1);
     std::transform(essentiaFreq.begin(), essentiaFreq.end(), std::back_inserter(noteArray), freqToNote);
     
-    const int numConsecutive = 10;
+    const int numConsecutive = 7;
     for (int i = 0; i < noteArray.size() - numConsecutive; ++i)
     {
         const int target = noteArray[i];
