@@ -52,7 +52,7 @@ MainContentComponent::MainContentComponent()
     lbl_version.setJustificationType (Justification::centredLeft);
     lbl_version.setEditable (false, false, false);
     
-    preApplyEssentia.buffer.setSize(1, lengthToDetectMelody_sample);
+    preApplyEssentia.buffer.setSize(1, lengthToEstimateMelody_sample);
     
     //Essentia
     essentia::init();
@@ -61,8 +61,8 @@ MainContentComponent::MainContentComponent()
     pitchfilter = factory.create("PitchFilter", "confidenceThreshold", 55, "minChunkSize", 35);
     std::cout<<"Essentia: algorithm created"<<std::endl;
     
-    essentiaInput.reserve(lengthToDetectMelody_sample);
-    essentiaInput.resize(lengthToDetectMelody_sample, 0.0f);
+    essentiaInput.reserve(lengthToEstimateMelody_sample);
+    essentiaInput.resize(lengthToEstimateMelody_sample, 0.0f);
     essentiaPitch.reserve(200);
     essentiaPitchConfidence.reserve(200);
     essentiaFreq.reserve(200);
@@ -129,20 +129,20 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
         highpass.processor.process(context);
     }
     
-    if(preApplyEssentia.index + bufferToFill.buffer->getNumSamples() < lengthToDetectMelody_sample)
+    if(preApplyEssentia.index + bufferToFill.buffer->getNumSamples() < lengthToEstimateMelody_sample)
     {
         preApplyEssentia.buffer.copyFrom(0, preApplyEssentia.index, *bufferToFill.buffer, 0, 0, bufferToFill.buffer->getNumSamples());
         preApplyEssentia.index += bufferToFill.buffer->getNumSamples();
     }
     else
     {
-        const int remains = lengthToDetectMelody_sample - preApplyEssentia.index;
+        const int remains = lengthToEstimateMelody_sample - preApplyEssentia.index;
         preApplyEssentia.buffer.copyFrom(0, preApplyEssentia.index, *bufferToFill.buffer, 0, 0, remains);
         const float RMSlevel_dB = Decibels::gainToDecibels(preApplyEssentia.buffer.getRMSLevel(0, 0, preApplyEssentia.buffer.getNumSamples()));
         if(RMSlevel_dB > sl_noiseGateThreshold.getValue())
         {
             const float* preBuffer = preApplyEssentia.buffer.getReadPointer(0);
-            for(int i = 0; i < lengthToDetectMelody_sample; ++i)
+            for(int i = 0; i < lengthToEstimateMelody_sample; ++i)
             {
                 essentiaInput.emplace_back(preBuffer[i]);
             }
