@@ -69,8 +69,13 @@ private:
     //小音量時にメロディー判定を行わないようにするための閾値(dB)
     Slider sl_noiseGateThreshold;
     Label lbl_noiseGate;
+    //ハイパスフィルター
     ComboBox cmb_hpf;
     Label lbl_hpf;
+    //アプリ名,バージョン表示
+    Label lbl_appName;
+    Label lbl_version;
+    
     
     using iir = dsp::ProcessorDuplicator<dsp::IIR::Filter<float>, dsp::IIR::Coefficients<float>>;
     struct highpassAndEnable{

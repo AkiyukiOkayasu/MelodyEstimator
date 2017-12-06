@@ -10,16 +10,19 @@ MainContentComponent::MainContentComponent()
     sl_noiseGateThreshold.setTextValueSuffix("dB");
     sl_noiseGateThreshold.setSliderStyle (Slider::LinearBar);
     sl_noiseGateThreshold.setTextBoxStyle (Slider::TextBoxLeft, false, 80, sl_noiseGateThreshold.getTextBoxHeight());
-    sl_noiseGateThreshold.setColour (Slider::trackColourId, Colour::Colour(101, 167, 255));
+    sl_noiseGateThreshold.setColour (Slider::trackColourId, Colour::Colour(60, 103, 127));
     sl_noiseGateThreshold.addListener(this);
     addAndMakeVisible(lbl_noiseGate);
     lbl_noiseGate.setText("Noise Gate Threshold", NotificationType::dontSendNotification);
-    lbl_noiseGate.attachToComponent(&sl_noiseGateThreshold, false);
+    lbl_noiseGate.setFont(Font (Font::getDefaultMonospacedFontName(), 15.00f, Font::plain).withTypefaceStyle ("Regular"));
+    lbl_noiseGate.setJustificationType (Justification::centredLeft);
+    lbl_noiseGate.setEditable (false, false, false);
+    lbl_noiseGate.attachToComponent(&sl_noiseGateThreshold, true);
     
     //GUI Highpass filter
     addAndMakeVisible (cmb_hpf);
     cmb_hpf.setEditableText (false);
-    cmb_hpf.setJustificationType (Justification::centredLeft);
+    cmb_hpf.setJustificationType (Justification::centred);
     cmb_hpf.addItem (TRANS("OFF"), 1);
     cmb_hpf.addSeparator();
     cmb_hpf.addItem (TRANS("20Hz"), 2);
@@ -31,7 +34,23 @@ MainContentComponent::MainContentComponent()
     cmb_hpf.addListener (this);
     addAndMakeVisible(lbl_hpf);
     lbl_hpf.setText("High-pass Filter", NotificationType::dontSendNotification);
-    lbl_hpf.attachToComponent(&cmb_hpf, false);
+    lbl_hpf.setFont (Font (Font::getDefaultMonospacedFontName(), 15.00f, Font::plain).withTypefaceStyle ("Regular"));
+    lbl_hpf.setJustificationType (Justification::centredLeft);
+    lbl_hpf.setEditable (false, false, false);
+    lbl_hpf.attachToComponent(&cmb_hpf, true);
+    
+    addAndMakeVisible (lbl_appName);
+    lbl_appName.setText("Melody Estimator", NotificationType::dontSendNotification);
+    lbl_appName.setFont (Font (Font::getDefaultMonospacedFontName(), 21.00f, Font::plain).withTypefaceStyle ("Regular"));
+    lbl_appName.setJustificationType (Justification::centredLeft);
+    lbl_appName.setEditable (false, false, false);
+    
+    addAndMakeVisible (lbl_version);
+    std::string version = "ver" + std::string(ProjectInfo::versionString);
+    lbl_version.setText(version, NotificationType::dontSendNotification);
+    lbl_version.setFont (Font (Font::getDefaultMonospacedFontName(), 14.00f, Font::plain).withTypefaceStyle ("Regular"));
+    lbl_version.setJustificationType (Justification::centredLeft);
+    lbl_version.setEditable (false, false, false);
     
     preApplyEssentia.buffer.setSize(1, lengthToDetectMelody_sample);
     
@@ -61,7 +80,7 @@ MainContentComponent::MainContentComponent()
     std::cout<<"MIDI port: "<<midiOut->getName()<<std::endl;
     midiOut->startBackgroundThread();
     
-    setSize (600, 170);
+    setSize (600, 140);
     
     //保存したパラメータをXMLファイルから呼び出し
     PropertiesFile::Options options;
@@ -149,13 +168,15 @@ void MainContentComponent::releaseResources()
 //==============================================================================
 void MainContentComponent::paint (Graphics& g)
 {
-    g.fillAll(Colour::Colour(25, 42, 64));
+    g.fillAll(Colour::Colour(7, 29, 36));
 }
 
 void MainContentComponent::resized()
 {
-    sl_noiseGateThreshold.setBounds(20, 40, getWidth() - 40, 40);
-    cmb_hpf.setBounds(20, 120, 120, 30);
+    lbl_appName.setBounds (8, 16, 160, 21);
+    lbl_version.setBounds (168, 16, 70, 24);
+    sl_noiseGateThreshold.setBounds(175, 57, 400, 25);
+    cmb_hpf.setBounds(175, 97, 100, 25);
 }
 
 void MainContentComponent::sliderValueChanged (Slider* slider)
