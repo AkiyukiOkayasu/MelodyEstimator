@@ -10,7 +10,7 @@ MainContentComponent::MainContentComponent()
     sl_noiseGateThreshold.setTextValueSuffix("dB");
     sl_noiseGateThreshold.setSliderStyle (Slider::LinearBar);
     sl_noiseGateThreshold.setTextBoxStyle (Slider::TextBoxLeft, false, 80, sl_noiseGateThreshold.getTextBoxHeight());
-    sl_noiseGateThreshold.setColour (Slider::trackColourId, Colour::Colour(60, 103, 127));
+    sl_noiseGateThreshold.setColour (Slider::trackColourId, Colour::Colour(109, 186, 229));
     sl_noiseGateThreshold.addListener(this);
     addAndMakeVisible(lbl_noiseGate);
     lbl_noiseGate.setText("Noise Gate Threshold", NotificationType::dontSendNotification);
@@ -173,8 +173,8 @@ void MainContentComponent::paint (Graphics& g)
 
 void MainContentComponent::resized()
 {
-    lbl_appName.setBounds (8, 16, 160, 21);
-    lbl_version.setBounds (168, 16, 70, 24);
+    lbl_appName.setBounds (8, 16, 170, 21);
+    lbl_version.setBounds (173, 16, 70, 24);
     sl_noiseGateThreshold.setBounds(175, 57, 400, 25);
     cmb_hpf.setBounds(175, 97, 100, 25);
 }
