@@ -98,6 +98,8 @@ MainContentComponent::MainContentComponent()
     cmb_hpf.setSelectedItemIndex(hpfIndex);
     sl_noiseGateThreshold.setValue(thrsld, NotificationType::dontSendNotification);
     setAudioChannels (1, 0, savedAudioState);
+    
+    startTimerHz(30);
 }
 
 MainContentComponent::~MainContentComponent()
@@ -140,7 +142,7 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
     {
         const int remains = lengthToEstimateMelody_sample - preApplyEssentia.index;
         preApplyEssentia.buffer.copyFrom(0, preApplyEssentia.index, *bufferToFill.buffer, 0, 0, remains);
-        const float RMSlevel_dB = Decibels::gainToDecibels(preApplyEssentia.buffer.getRMSLevel(0, 0, preApplyEssentia.buffer.getNumSamples()));
+        RMSlevel_dB = Decibels::gainToDecibels(preApplyEssentia.buffer.getRMSLevel(0, 0, preApplyEssentia.buffer.getNumSamples()));
         if(RMSlevel_dB > sl_noiseGateThreshold.getValue())
         {
             const float* preBuffer = preApplyEssentia.buffer.getReadPointer(0);
@@ -170,15 +172,23 @@ void MainContentComponent::releaseResources()
 //==============================================================================
 void MainContentComponent::paint (Graphics& g)
 {
+    float level = RMSlevel_dB.load();
+    level = jmax<float>(level, sl_noiseGateThreshold.getMinimum());
+    auto range = sl_noiseGateThreshold.getRange();
+    const float gain = (level - range.getStart()) / range.getLength();
     g.fillAll(Colour::Colour(7, 29, 36));
+    auto meterArea = Rectangle<int>(175, 77, 400, 10);
+    meterArea.removeFromRight(meterArea.getWidth() * (1.0 - gain));
+    g.setColour(Colour::Colour(69, 255, 186));
+    g.fillRoundedRectangle (meterArea.toFloat(), 0.0);
 }
 
 void MainContentComponent::resized()
 {
     lbl_appName.setBounds (8, 16, 170, 21);
     lbl_version.setBounds (173, 16, 70, 24);
-    sl_noiseGateThreshold.setBounds(175, 57, 400, 25);
-    cmb_hpf.setBounds(175, 97, 100, 25);
+    sl_noiseGateThreshold.setBounds(175, 57, 400, 20);
+    cmb_hpf.setBounds(175, 97, 100, 23);
 }
 
 void MainContentComponent::sliderValueChanged (Slider* slider)
@@ -259,6 +269,12 @@ void MainContentComponent::showAudioSettings()
     appProperties->getUserSettings()->setValue ("audioDeviceState", audioState);
     appProperties->getUserSettings()->saveIfNeeded();
 }
+
+void MainContentComponent::timerCallback()
+{
+    repaint();
+}
+
 
 void MainContentComponent::sendOSC(String oscAddress, int value)
 {

@@ -10,7 +10,8 @@ class MainContentComponent :
 public AudioAppComponent,
 public MenuBarModel,
 public Slider::Listener,
-public ComboBox::Listener
+public ComboBox::Listener,
+private Timer
 {
 public:
     MainContentComponent();
@@ -38,6 +39,7 @@ public:
     
 private:
     //==============================================================================
+    void timerCallback() override;
     void sendOSC(String oscAddress, int value);
     void sendMIDI(int noteNumber);
     void estimateMelody();
@@ -62,6 +64,8 @@ private:
     ScopedPointer<MidiOutput> midiOut;
     MidiMessage midiMessage;
     int lastNote = -1;
+    
+    std::atomic<float> RMSlevel_dB{-100.0};
     
     //オーディオインターフェース,ノイズゲート設定の記録、呼び出し用
     ScopedPointer<ApplicationProperties> appProperties;
