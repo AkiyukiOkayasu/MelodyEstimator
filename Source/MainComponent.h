@@ -58,7 +58,7 @@ private:
     
     //MIDI
     static const int midiChannel = 1;
-    const String midiPortName = "MelodyDetection";
+    const String midiPortName = "MelodyEstimator";
     ScopedPointer<MidiOutput> midiOut;
     MidiMessage midiMessage;
     int lastNote = -1;
