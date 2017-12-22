@@ -57,8 +57,8 @@ MainContentComponent::MainContentComponent()
     //Essentia
     essentia::init();
     essentia::standard::AlgorithmFactory& factory = essentia::standard::AlgorithmFactory::instance();
-    melodyEstimate = factory.create("PredominantPitchMelodia", "minFrequency", 220.0f, "maxFrequency", 7040.0f, "voicingTolerance", -0.1f);//voicingToleranceパラメータは要調整 [-1.0~1.4] default:0.2(反応のしやすさ的なパラメータ)
-    pitchfilter = factory.create("PitchFilter", "confidenceThreshold", 55, "minChunkSize", 35);
+    melodyEstimate = factory.create("PredominantPitchMelodia", "minFrequency", 220.0f / (float)(overSampleFactor + 1), "maxFrequency", 7040.0f / (float)(overSampleFactor + 1), "voicingTolerance", -0.9f);//voicingToleranceパラメータは要調整 [-1.0~1.4] default:0.2(反応のしやすさ的なパラメータ)
+    pitchfilter = factory.create("PitchFilter", "confidenceThreshold", 60, "minChunkSize", 35);
     std::cout<<"Essentia: algorithm created"<<std::endl;
     
     essentiaInput.reserve(lengthToEstimateMelody_sample);
@@ -98,7 +98,6 @@ MainContentComponent::MainContentComponent()
     cmb_hpf.setSelectedItemIndex(hpfIndex);
     sl_noiseGateThreshold.setValue(thrsld, NotificationType::dontSendNotification);
     setAudioChannels (1, 0, savedAudioState);
-    
     startTimerHz(30);
 }
 
@@ -309,7 +308,8 @@ void MainContentComponent::estimateMelody()
     std::vector<int> noteArray(essentiaFreq.size(), -1);
     std::transform(essentiaFreq.begin(), essentiaFreq.end(), std::back_inserter(noteArray), freqToNote);
     
-    const int numConsecutive = 3;
+    const int numConsecutive = 12;
+    const int noteOffset = 12 * overSampleFactor;//オーバーサンプリングの影響でオクターブ下に推定されてしまっている
     for (int i = 0; i < noteArray.size() - numConsecutive; ++i)
     {
         const int target = noteArray[i];
@@ -319,8 +319,8 @@ void MainContentComponent::estimateMelody()
             if (isEnoughConsecutive)
             {
                 lastNote = target;
-                sendOSC(oscAddress_note, lastNote);
-                sendMIDI(lastNote);
+                sendOSC(oscAddress_note, lastNote + noteOffset);
+                sendMIDI(lastNote + noteOffset);
             }
         }
     }
