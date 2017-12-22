@@ -46,7 +46,7 @@ MainContentComponent::MainContentComponent()
     lbl_appName.setEditable (false, false, false);
     
     addAndMakeVisible (lbl_version);
-    std::string version = "ver" + std::string(ProjectInfo::versionString);
+    std::string version = "ver" + std::string(ProjectInfo::versionString) + " beta";
     lbl_version.setText(version, NotificationType::dontSendNotification);
     lbl_version.setFont (Font (Font::getDefaultMonospacedFontName(), 14.00f, Font::plain).withTypefaceStyle ("Regular"));
     lbl_version.setJustificationType (Justification::centredLeft);
