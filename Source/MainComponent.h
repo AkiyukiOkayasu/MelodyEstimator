@@ -80,7 +80,8 @@ private:
     Label lbl_appName;
     Label lbl_version;
     
-    
+    ScopedPointer<dsp::Oversampling<float>> oversampling;
+    static const int overSampleFactor = 2;//2^overSampleFactor
     using iir = dsp::ProcessorDuplicator<dsp::IIR::Filter<float>, dsp::IIR::Coefficients<float>>;
     struct highpassAndEnable{
         dsp::ProcessorChain<iir, iir> processor;
