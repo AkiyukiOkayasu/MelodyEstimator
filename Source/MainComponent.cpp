@@ -57,8 +57,11 @@ MainContentComponent::MainContentComponent()
     //Essentia
     essentia::init();
     essentia::standard::AlgorithmFactory& factory = essentia::standard::AlgorithmFactory::instance();
-    melodyEstimate = factory.create("PredominantPitchMelodia", "minFrequency", 220.0f, "maxFrequency", 7040.0f, "voicingTolerance", -0.1f);//voicingToleranceパラメータは要調整 [-1.0~1.4] default:0.2(反応のしやすさ的なパラメータ)
-    pitchfilter = factory.create("PitchFilter", "confidenceThreshold", 55, "minChunkSize", 35);
+    const float minFreq = MidiMessage::getMidiNoteInHertz(64 - (12 * overSampleFactor), 440.0) * 0.98;
+    const float maxFreq = MidiMessage::getMidiNoteInHertz(88 - (12 * overSampleFactor), 440.0);
+    std::cout<<"Estimate Freq Range: "<<minFreq<<"Hz ~ "<<maxFreq<<"Hz"<<std::endl;
+    melodyEstimate = factory.create("PredominantPitchMelodia", "minFrequency", minFreq, "maxFrequency", maxFreq, "voicingTolerance", -0.9f);//voicingToleranceパラメータは要調整 [-1.0~1.4] default:0.2(反応のしやすさ的なパラメータ)
+    pitchfilter = factory.create("PitchFilter", "confidenceThreshold", 70, "minChunkSize", 35);
     std::cout<<"Essentia: algorithm created"<<std::endl;
     
     essentiaInput.reserve(lengthToEstimateMelody_sample);
@@ -98,7 +101,6 @@ MainContentComponent::MainContentComponent()
     cmb_hpf.setSelectedItemIndex(hpfIndex);
     sl_noiseGateThreshold.setValue(thrsld, NotificationType::dontSendNotification);
     setAudioChannels (1, 0, savedAudioState);
-    
     startTimerHz(30);
 }
 
@@ -119,29 +121,31 @@ void MainContentComponent::prepareToPlay (int samplesPerBlockExpected, double sa
     std::cout<<"Sample Rate: "<<sampleRate<<std::endl;
     std::cout<<"Buffer Size: "<<samplesPerBlockExpected<<std::endl;
     
+    oversampling = new dsp::Oversampling<float>(1, overSampleFactor, dsp::Oversampling<float>::FilterType::filterHalfBandFIREquiripple, false);
     auto channels = static_cast<uint32>(1);//1ch
     dsp::ProcessSpec spec {sampleRate, static_cast<uint32>(samplesPerBlockExpected), channels};
     highpass.processor.prepare(spec);
+    oversampling->initProcessing(static_cast<size_t>(samplesPerBlockExpected));
+    oversampling->reset();
 }
 
 void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& bufferToFill)
 {
-    if(highpass.enabled)
-    {
-        dsp::AudioBlock<float> block(*bufferToFill.buffer);
-        dsp::ProcessContextReplacing<float> context(block);
-        highpass.processor.process(context);
-    }
+    dsp::AudioBlock<float> block(*bufferToFill.buffer);
+    dsp::ProcessContextReplacing<float> context(block);
+    if(highpass.enabled) highpass.processor.process(context);
+    dsp::AudioBlock<float> overSampledBlock;
+    overSampledBlock = oversampling->processSamplesUp(context.getInputBlock());
     
-    if(preApplyEssentia.index + bufferToFill.buffer->getNumSamples() < lengthToEstimateMelody_sample)
+    if(preApplyEssentia.index + overSampledBlock.getNumSamples() < lengthToEstimateMelody_sample)
     {
-        preApplyEssentia.buffer.copyFrom(0, preApplyEssentia.index, *bufferToFill.buffer, 0, 0, bufferToFill.buffer->getNumSamples());
-        preApplyEssentia.index += bufferToFill.buffer->getNumSamples();
+        preApplyEssentia.buffer.copyFrom(0, preApplyEssentia.index, overSampledBlock.getChannelPointer(0), (int)overSampledBlock.getNumSamples());
+        preApplyEssentia.index += overSampledBlock.getNumSamples();
     }
     else
     {
         const int remains = lengthToEstimateMelody_sample - preApplyEssentia.index;
-        preApplyEssentia.buffer.copyFrom(0, preApplyEssentia.index, *bufferToFill.buffer, 0, 0, remains);
+        preApplyEssentia.buffer.copyFrom(0, preApplyEssentia.index, overSampledBlock.getChannelPointer(0), remains);
         RMSlevel_dB = Decibels::gainToDecibels(preApplyEssentia.buffer.getRMSLevel(0, 0, preApplyEssentia.buffer.getNumSamples()));
         if(RMSlevel_dB > sl_noiseGateThreshold.getValue())
         {
@@ -155,10 +159,11 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
         }
         
         preApplyEssentia.index = 0;
-        const int n = bufferToFill.buffer->getNumSamples() - remains;
+        const int n = (int)overSampledBlock.getNumSamples() - remains;
         if(n > 0)
         {
-            preApplyEssentia.buffer.copyFrom(0, preApplyEssentia.index, *bufferToFill.buffer, 0, remains, n);
+            dsp::AudioBlock<float> subBlock = overSampledBlock.getSubBlock(remains);
+            preApplyEssentia.buffer.copyFrom(0, preApplyEssentia.index, subBlock.getChannelPointer(0), n);
             preApplyEssentia.index += n;
         }
     }
@@ -306,7 +311,8 @@ void MainContentComponent::estimateMelody()
     std::vector<int> noteArray(essentiaFreq.size(), -1);
     std::transform(essentiaFreq.begin(), essentiaFreq.end(), std::back_inserter(noteArray), freqToNote);
     
-    const int numConsecutive = 3;
+    const int numConsecutive = 12;
+    const int noteOffset = 12 * overSampleFactor;//オーバーサンプリングの影響でオクターブ下に推定されてしまっている
     for (int i = 0; i < noteArray.size() - numConsecutive; ++i)
     {
         const int target = noteArray[i];
@@ -316,8 +322,8 @@ void MainContentComponent::estimateMelody()
             if (isEnoughConsecutive)
             {
                 lastNote = target;
-                sendOSC(oscAddress_note, lastNote);
-                sendMIDI(lastNote);
+                sendOSC(oscAddress_note, lastNote + noteOffset);
+                sendMIDI(lastNote + noteOffset);
             }
         }
     }
