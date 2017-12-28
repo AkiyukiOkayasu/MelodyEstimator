@@ -3,6 +3,7 @@
 MainContentComponent::MainContentComponent()
 {
     setMacMainMenu(this);
+    setLookAndFeel(&lookAndFeel);
     
     //GUI Noise gate
     addAndMakeVisible(sl_noiseGateThreshold);
@@ -10,7 +11,7 @@ MainContentComponent::MainContentComponent()
     sl_noiseGateThreshold.setTextValueSuffix("dB");
     sl_noiseGateThreshold.setSliderStyle (Slider::LinearBar);
     sl_noiseGateThreshold.setTextBoxStyle (Slider::TextBoxLeft, false, 80, sl_noiseGateThreshold.getTextBoxHeight());
-    sl_noiseGateThreshold.setColour (Slider::trackColourId, Colour::Colour(109, 186, 229));
+//    sl_noiseGateThreshold.setColour (Slider::trackColourId, Colour::Colour(109, 186, 229));
     sl_noiseGateThreshold.addListener(this);
     addAndMakeVisible(lbl_noiseGate);
     lbl_noiseGate.setText("Noise Gate Threshold", NotificationType::dontSendNotification);
@@ -181,10 +182,10 @@ void MainContentComponent::paint (Graphics& g)
     level = jmax<float>(level, sl_noiseGateThreshold.getMinimum());
     auto range = sl_noiseGateThreshold.getRange();
     const float gain = (level - range.getStart()) / range.getLength();
-    g.fillAll(Colour::Colour(7, 29, 36));
+    g.fillAll(Colour::Colour(0xFF121258));
     auto meterArea = Rectangle<int>(175, 77, 400, 10);
     meterArea.removeFromRight(meterArea.getWidth() * (1.0 - gain));
-    g.setColour(Colour::Colour(69, 255, 186));
+    g.setColour(Colour::Colour(0xFF81fcad));
     g.fillRoundedRectangle (meterArea.toFloat(), 0.0);
 }
 

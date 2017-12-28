@@ -6,6 +6,21 @@
 #include <essentia/algorithmfactory.h>
 #include <essentia/essentiamath.h>
 
+struct CustomLookAndFeel    : public LookAndFeel_V4
+{
+    CustomLookAndFeel()
+    {
+        setColour(Slider::trackColourId, Colour::Colour(0xFFFF5F07));
+        setColour(Slider::backgroundColourId, Colour::Colour(0xFF121258));
+        setColour(Slider::textBoxTextColourId, Colours::white);
+        setColour(Slider::textBoxOutlineColourId, Colours::white);
+        setColour(ComboBox::backgroundColourId , Colour::Colour(0x00000000));
+        setColour(ComboBox::buttonColourId , Colour::Colour(0x00000000));
+        setColour(ComboBox::outlineColourId , Colours::white);
+        setColour(Label::textColourId, Colours::white);
+    }
+};
+
 class MainContentComponent :
 public AudioAppComponent,
 public MenuBarModel,
@@ -88,6 +103,7 @@ private:
         bool enabled = false;
     };
     highpassAndEnable highpass;
+    CustomLookAndFeel lookAndFeel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
 };
