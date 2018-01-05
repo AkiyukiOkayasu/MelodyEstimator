@@ -110,7 +110,6 @@ MainContentComponent::~MainContentComponent()
     setMacMainMenu(nullptr);
     midiOut->clearAllPendingMessages();
     midiOut->stopBackgroundThread();
-    midiOut.release();
     shutdownAudio();
     essentia::shutdown();
 }
