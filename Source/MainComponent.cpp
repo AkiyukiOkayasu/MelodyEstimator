@@ -24,11 +24,11 @@ MainContentComponent::MainContentComponent()
     sl_hpf.setRange(20.0, 120.0, 5.0);
     sl_hpf.setTextValueSuffix("Hz");
     sl_hpf.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    sl_hpf.setTextBoxStyle(Slider::TextBoxBelow, false, 45, 15);
+    sl_hpf.setTextBoxStyle(Slider::TextBoxBelow, false, 60, 15);
     sl_hpf.addListener(this);
     addAndMakeVisible(lbl_hpf);
     lbl_hpf.setText("High-pass Filter", dontSendNotification);
-    lbl_hpf.setFont (Font (Font::getDefaultMonospacedFontName(), 15.00f, Font::plain).withTypefaceStyle ("Regular"));
+    lbl_hpf.setFont (Font (Font::getDefaultMonospacedFontName(), 14.00f, Font::plain).withTypefaceStyle ("Regular"));
     lbl_hpf.setJustificationType (Justification::centredLeft);
     lbl_hpf.setEditable (false, false, false);
     lbl_hpf.attachToComponent(&sl_hpf, true);
@@ -40,11 +40,11 @@ MainContentComponent::MainContentComponent()
     sl_lpf.setRange(3200.0, 20000.0, 100.0);
     sl_lpf.setTextValueSuffix("Hz");
     sl_lpf.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    sl_lpf.setTextBoxStyle(Slider::TextBoxBelow, false, 45, 15);
+    sl_lpf.setTextBoxStyle(Slider::TextBoxBelow, false, 60, 15);
     sl_lpf.addListener(this);
     addAndMakeVisible(lbl_lpf);
     lbl_lpf.setText("Low-pass Filter", dontSendNotification);
-    lbl_lpf.setFont (Font (Font::getDefaultMonospacedFontName(), 15.00f, Font::plain).withTypefaceStyle ("Regular"));
+    lbl_lpf.setFont (Font (Font::getDefaultMonospacedFontName(), 14.00f, Font::plain).withTypefaceStyle ("Regular"));
     lbl_lpf.setJustificationType (Justification::centredLeft);
     lbl_lpf.setEditable (false, false, false);
     lbl_lpf.attachToComponent(&sl_lpf, true);
@@ -216,10 +216,10 @@ void MainContentComponent::resized()
     lbl_appName.setBounds (8, 16, 170, 21);
     lbl_version.setBounds (173, 16, 70, 24);
     sl_noiseGateThreshold.setBounds(175, 57, 400, 20);
-    sl_hpf.setBounds(175, 97, 80, 80);
-    tgl_hpf.setBounds(160, 115, 30, 30);
-    sl_lpf.setBounds(375, 97, 80, 80);
-    tgl_lpf.setBounds(360, 115, 30, 30);
+    sl_hpf.setBounds(175, 97, 80, 85);
+    tgl_hpf.setBounds(168, 137, 30, 30);
+    sl_lpf.setBounds(375, 97, 80, 85);
+    tgl_lpf.setBounds(368, 137, 30, 30);
 }
 
 void MainContentComponent::sliderValueChanged (Slider* slider)
