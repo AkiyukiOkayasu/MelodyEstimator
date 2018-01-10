@@ -1,25 +1,26 @@
-# Melody Estimator
+# Melody Estimator  
 **WORK IN PROGRESS**  
 This software is work in progress. Please use it at your own risk.  
 <br>
 Stand-alone application for estimate the main melody from streaming audio in real-time.  
 This is made with [JUCE](https://github.com/WeAreROLI/JUCE) and [Essentia](https://github.com/MTG/essentia).  
+Commentary(in Japasene) is [here](https://qiita.com/AkiyukiOkayasu/items/7b5a0671cbfc8e704590).  
 <br>
 
-## Feature
-- Estimating the melody from streaming audio in real-time  
-- Sending MIDI and OSC estimate result  
+## Feature  
+- Estimating the melody from streaming audio in real-time.  
+- Sending MIDI and OSC estimate result.  
 <br>
 
-## System Requirements  
+## System Requirements    
 MacOS 10.12 later  
 The sample rate must be 44100Hz, not supported other sample rates.  
 <br>
 
-## Download
+## Download  
 You can download the pre-built application from [Release](https://github.com/AkiyukiOkayasu/MelodyEstimator/releases).  
 <br>
 
-## License
+## License  
 GPLv3  
 <br>
