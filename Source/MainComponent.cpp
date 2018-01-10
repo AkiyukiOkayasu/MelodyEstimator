@@ -106,6 +106,7 @@ MainContentComponent::MainContentComponent()
 
 MainContentComponent::~MainContentComponent()
 {
+    setLookAndFeel(nullptr);
     setMacMainMenu(nullptr);
     midiOut->clearAllPendingMessages();
     midiOut->stopBackgroundThread();
