@@ -204,10 +204,10 @@ void MainContentComponent::paint (Graphics& g)
     level = jmax<float>(level, sl_noiseGateThreshold.getMinimum());
     auto range = sl_noiseGateThreshold.getRange();
     const float gain = (level - range.getStart()) / range.getLength();
-    g.fillAll(Colour::Colour(0xFF121258));
+    g.fillAll(Colour::Colour(0xFFFCFCFC));
     auto meterArea = Rectangle<int>(175, 77, 400, 10);
     meterArea.removeFromRight(meterArea.getWidth() * (1.0 - gain));
-    g.setColour(Colour::Colour(0xFF81fcad));
+    g.setColour(Colour::Colour(0xFFA9FDAC));
     g.fillRoundedRectangle (meterArea.toFloat(), 0.0);
 }
 

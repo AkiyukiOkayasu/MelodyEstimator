@@ -15,14 +15,16 @@ struct CustomLookAndFeel    : public LookAndFeel_V4
 {
     CustomLookAndFeel()
     {
-        setColour(Slider::thumbColourId, Colour::Colour(0xFFFF5F07));//ロータリーエンコーダーのつまみ
-        setColour(Slider::rotarySliderFillColourId, Colour::Colour(0xFFFF0000));//ロータリーエンコーダーの外周(有効範囲)
-        setColour(Slider::rotarySliderOutlineColourId, Colour::Colour(0xFF00FF00));//ロータリーエンコーダーの外周(非有効範囲)
-        setColour(Slider::trackColourId, Colour::Colour(0xFFFF5F07));//スライダーの有効範囲
-        setColour(Slider::backgroundColourId, Colour::Colour(0xFF121258));//スライダーの背景
-        setColour(Slider::textBoxTextColourId, Colours::white);
-        setColour(Slider::textBoxOutlineColourId, Colours::white);
-        setColour(Label::textColourId, Colours::white);
+        setColour(Slider::thumbColourId, Colour::Colour(0xFFAED1E6));//ロータリーエンコーダーのつまみ
+        setColour(Slider::rotarySliderFillColourId, Colour::Colour(0xFFC6DBF0));//ロータリーエンコーダーの外周(有効範囲)
+        setColour(Slider::rotarySliderOutlineColourId, Colour::Colour(0xFF272727));//ロータリーエンコーダーの外周(非有効範囲)
+        setColour(Slider::trackColourId, Colour::Colour(0xFFAED1E6));//スライダーの有効範囲
+        setColour(Slider::backgroundColourId, Colour::Colour(0xFF272727));//スライダーの背景
+        setColour(Slider::textBoxTextColourId, Colour::Colour(0xFF272727));
+        setColour(Slider::textBoxOutlineColourId, Colour::Colour(0xFF272727));
+        setColour(Label::textColourId, Colour::Colour(0xFF272727));
+        setColour(ToggleButton::tickColourId, Colour::Colour(0xFF272727));
+        setColour(ToggleButton::tickDisabledColourId, Colour::Colour(0xFF272727));
     }
 };
 
