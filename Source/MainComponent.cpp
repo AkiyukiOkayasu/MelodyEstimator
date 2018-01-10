@@ -21,7 +21,7 @@ MainContentComponent::MainContentComponent()
     
     //GUI Highpass filter
     addAndMakeVisible(sl_hpf);
-    sl_hpf.setRange(20.0, 120.0, 1.0);
+    sl_hpf.setRange(20.0, 120.0, 5.0);
     sl_hpf.setTextValueSuffix("Hz");
     sl_hpf.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     sl_hpf.setTextBoxStyle(Slider::TextBoxBelow, false, 45, 15);
@@ -37,7 +37,7 @@ MainContentComponent::MainContentComponent()
     
     //GUI Lowpass filter
     addAndMakeVisible(sl_lpf);
-    sl_lpf.setRange(2000.0, 20000.0, 1.0);
+    sl_lpf.setRange(3200.0, 20000.0, 100.0);
     sl_lpf.setTextValueSuffix("Hz");
     sl_lpf.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     sl_lpf.setTextBoxStyle(Slider::TextBoxBelow, false, 45, 15);
