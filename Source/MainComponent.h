@@ -6,6 +6,11 @@
 #include <essentia/algorithmfactory.h>
 #include <essentia/essentiamath.h>
 
+#define XMLKEYAUDIOSETTINGS "audioDeviceState"
+#define XMLKEYNOISEGATE "noiseGateSettings"
+#define XMLKEYHIGHPASS "highpassFilterSettings"
+#define XMLKEYLOWPASS "lowpassFilterSettings"
+
 struct CustomLookAndFeel    : public LookAndFeel_V4
 {
     CustomLookAndFeel()
@@ -81,6 +86,10 @@ private:
     
     //オーディオインターフェース,ノイズゲート設定の記録、呼び出し用
     ScopedPointer<ApplicationProperties> appProperties;
+    std::unique_ptr<XmlElement> savedAudioState;
+    std::unique_ptr<XmlElement> noiseGateSettings;
+    std::unique_ptr<XmlElement> highpassSettings;
+    std::unique_ptr<XmlElement> lowpassSettings;
     
     //小音量時にメロディー判定を行わないようにするための閾値(dB)
     Slider sl_noiseGateThreshold;

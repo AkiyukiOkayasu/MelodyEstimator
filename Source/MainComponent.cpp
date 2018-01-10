@@ -63,17 +63,14 @@ MainContentComponent::MainContentComponent()
     lbl_version.setJustificationType (Justification::centredLeft);
     lbl_version.setEditable (false, false, false);
     
-    preApplyEssentia.buffer.setSize(1, lengthToEstimateMelody_sample);
-    
     //Essentia
+    preApplyEssentia.buffer.setSize(1, lengthToEstimateMelody_sample);
     essentia::init();
     essentia::standard::AlgorithmFactory& factory = essentia::standard::AlgorithmFactory::instance();
     const float minFreq = MidiMessage::getMidiNoteInHertz(64 - (12 * overSampleFactor), 440.0) * 0.98;
     const float maxFreq = MidiMessage::getMidiNoteInHertz(88 - (12 * overSampleFactor), 440.0);
-    std::cout<<"Estimate Freq Range: "<<minFreq<<"Hz ~ "<<maxFreq<<"Hz"<<std::endl;
     melodyEstimate = factory.create("PredominantPitchMelodia", "minFrequency", minFreq, "maxFrequency", maxFreq, "voicingTolerance", -0.9f);//voicingToleranceパラメータは要調整 [-1.0~1.4] default:0.2(反応のしやすさ的なパラメータ)
     pitchfilter = factory.create("PitchFilter", "confidenceThreshold", 70, "minChunkSize", 35);
-    std::cout<<"Essentia: algorithm created"<<std::endl;
     
     essentiaInput.reserve(lengthToEstimateMelody_sample);
     essentiaInput.resize(lengthToEstimateMelody_sample, 0.0f);
@@ -86,13 +83,13 @@ MainContentComponent::MainContentComponent()
     pitchfilter->input("pitch").set(essentiaPitch);
     pitchfilter->input("pitchConfidence").set(essentiaPitchConfidence);
     pitchfilter->output("pitchFiltered").set(essentiaFreq);
-    std::cout<<"Essentia: algorithm connected"<<std::endl;
     
-    if(! oscSender.connect(ip, port)) std::cout<<"OSC connection Error..."<<std::endl;
-    
+    if(!oscSender.connect(ip, port)) std::cout<<"OSC connection Error..."<<std::endl;
     midiOut = MidiOutput::createNewDevice(midiPortName);
-    std::cout<<"MIDI port: "<<midiOut->getName()<<std::endl;
-    midiOut->startBackgroundThread();
+    if(midiOut != nullptr) {
+        std::cout<<"MIDI port: "<<midiOut->getName()<<std::endl;
+        midiOut->startBackgroundThread();
+    }
     
     setSize (600, 200);
     
@@ -104,19 +101,24 @@ MainContentComponent::MainContentComponent()
     appProperties = new ApplicationProperties();
     appProperties->setStorageParameters (options);
     auto userSettings = appProperties->getUserSettings();
-    ScopedPointer<XmlElement> savedAudioState (userSettings->getXmlValue ("audioDeviceState"));//オーディオインターフェースの設定
-    ScopedPointer<XmlElement> savedNoiseGateSettings (userSettings->getXmlValue("noiseGateSettings"));//ノイズゲートの設定
-    ScopedPointer<XmlElement> savedHighpassFilterSettings (userSettings->getXmlValue("highpassFilterSettings"));//ハイパスの設定
-    const double thrsld = savedNoiseGateSettings ? savedNoiseGateSettings->getDoubleAttribute("threshold") : -24.0;
-    const auto hpfIndex = savedHighpassFilterSettings ? savedHighpassFilterSettings->getIntAttribute("selectedItemIndex"): 0;
-    cmb_hpf.setSelectedItemIndex(hpfIndex);
-    sl_noiseGateThreshold.setValue(thrsld, NotificationType::dontSendNotification);
-    setAudioChannels (1, 0, savedAudioState);
+    savedAudioState = std::unique_ptr<XmlElement>(userSettings->getXmlValue (XMLKEYAUDIOSETTINGS));//オーディオIOの設定
+    noiseGateSettings = std::unique_ptr<XmlElement>(userSettings->getXmlValue(XMLKEYNOISEGATE));//ノイズゲートの設定
+    highpassSettings = std::unique_ptr<XmlElement>(userSettings->getXmlValue(XMLKEYHIGHPASS));//ハイパスの設定
+    lowpassSettings = std::unique_ptr<XmlElement>(userSettings->getXmlValue(XMLKEYLOWPASS));//ローパスの設定
+    const double thrsld = noiseGateSettings != nullptr ? noiseGateSettings->getDoubleAttribute("threshold") : -24.0;
     const double hpfFreq = highpassSettings != nullptr ? highpassSettings->getDoubleAttribute("freq") : 20.0;
     const bool hpfEnable = highpassSettings != nullptr ? highpassSettings->getBoolAttribute("enable") : false;
+    const double lpfFreq = lowpassSettings != nullptr ? lowpassSettings->getDoubleAttribute("freq") : 20000.0;
+    const bool lpfEnable = lowpassSettings != nullptr ? lowpassSettings->getBoolAttribute("enable") : false;
     sl_hpf.setEnabled(hpfEnable);
     sl_hpf.setValue(hpfFreq, dontSendNotification);
     tgl_hpf.setToggleState(hpfEnable, dontSendNotification);
+    sl_lpf.setEnabled(lpfEnable);
+    sl_lpf.setValue(lpfFreq, dontSendNotification);
+    tgl_lpf.setEnabled(lpfEnable);
+    sl_noiseGateThreshold.setValue(thrsld, dontSendNotification);
+    
+    setAudioChannels (1, 0, savedAudioState.get());
     startTimerHz(30);
 }
 
@@ -133,12 +135,10 @@ MainContentComponent::~MainContentComponent()
 //==============================================================================
 void MainContentComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRate)
 {
-    std::cout<<"prepareToPlay()"<<std::endl;
     std::cout<<"Sample Rate: "<<sampleRate<<std::endl;
     std::cout<<"Buffer Size: "<<samplesPerBlockExpected<<std::endl;
-    
     oversampling = new dsp::Oversampling<float>(1, overSampleFactor, dsp::Oversampling<float>::FilterType::filterHalfBandFIREquiripple, false);
-    auto channels = static_cast<uint32>(1);//1ch
+    auto channels = static_cast<uint32>(1);//モノラル入力のみ対応
     dsp::ProcessSpec spec {sampleRate, static_cast<uint32>(samplesPerBlockExpected), channels};
     highpass.prepare(spec);
     lowpass.prepare(spec);
@@ -168,8 +168,7 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
         if(RMSlevel_dB > sl_noiseGateThreshold.getValue())
         {
             const float* preBuffer = preApplyEssentia.buffer.getReadPointer(0);
-            for(int i = 0; i < lengthToEstimateMelody_sample; ++i)
-            {
+            for(int i = 0; i < lengthToEstimateMelody_sample; ++i) {
                 essentiaInput.emplace_back(preBuffer[i]);
             }
             estimateMelody();
@@ -222,12 +221,9 @@ void MainContentComponent::sliderValueChanged (Slider* slider)
 {
     if (slider == &sl_noiseGateThreshold)
     {
-        //スライダーの値をXMLで保存
-        String xmltag =  "noiseGateThreshold";
-        ScopedPointer<XmlElement> noiseGateSettings = new XmlElement(xmltag);
         noiseGateSettings->setAttribute("threshold", slider->getValue());
-        appProperties->getUserSettings()->setValue ("noiseGateSettings", noiseGateSettings);
-        appProperties->getUserSettings()->saveIfNeeded();
+        appProperties->getUserSettings()->setValue (XMLKEYNOISEGATE, noiseGateSettings.get());
+        appProperties->getUserSettings()->save();
     }
     else if(slider == &sl_hpf)
     {
@@ -304,7 +300,7 @@ void MainContentComponent::showAudioSettings()
     
     //設定をXMLファイルで保存
     ScopedPointer<XmlElement> audioState (deviceManager.createStateXml());
-    appProperties->getUserSettings()->setValue ("audioDeviceState", audioState);
+    appProperties->getUserSettings()->setValue (XMLKEYAUDIOSETTINGS, audioState);
     appProperties->getUserSettings()->saveIfNeeded();
 }
 
