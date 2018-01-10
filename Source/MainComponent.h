@@ -60,7 +60,8 @@ private:
     void sendOSC(String oscAddress, int value);
     void sendMIDI(int noteNumber);
     void estimateMelody();
-    void computeHighpassCoefficient(const double cutoffFreq, const double sampleRate);
+    void updateHighpassCoefficient(const double cutoffFreq, const double sampleRate);
+    void updateLowpassCoefficient(const double cutoffFreq, const double sampleRate);
     
     static const int lengthToEstimateMelody_sample = 8192;//8192サンプルごとにメロディー推定を行う
     struct bufferAndIndex{

@@ -142,6 +142,8 @@ void MainContentComponent::prepareToPlay (int samplesPerBlockExpected, double sa
     dsp::ProcessSpec spec {sampleRate, static_cast<uint32>(samplesPerBlockExpected), channels};
     highpass.prepare(spec);
     lowpass.prepare(spec);
+    updateHighpassCoefficient(sl_hpf.getValue(), sampleRate);
+    updateLowpassCoefficient(sl_lpf.getValue(), sampleRate);
     oversampling->initProcessing(static_cast<size_t>(samplesPerBlockExpected));
     oversampling->reset();
 }
@@ -228,7 +230,7 @@ void MainContentComponent::sliderValueChanged (Slider* slider)
     else if(slider == &sl_hpf)
     {
         const double freq = slider->getValue();
-        computeHighpassCoefficient(freq, deviceManager.getCurrentAudioDevice()->getCurrentSampleRate());
+        updateHighpassCoefficient(freq, deviceManager.getCurrentAudioDevice()->getCurrentSampleRate());
         highpassSettings->setAttribute("freq", freq);
         appProperties->getUserSettings()->setValue (XMLKEYHIGHPASS, highpassSettings.get());
         appProperties->getUserSettings()->save();
@@ -236,7 +238,7 @@ void MainContentComponent::sliderValueChanged (Slider* slider)
     else if(slider == &sl_lpf)
     {
         const double freq = slider->getValue();
-        *lowpass.state = *dsp::IIR::Coefficients<float>::makeLowPass(deviceManager.getCurrentAudioDevice()->getCurrentSampleRate(), freq);
+        updateLowpassCoefficient(freq, deviceManager.getCurrentAudioDevice()->getCurrentSampleRate());
         lowpassSettings->setAttribute("freq", freq);
         appProperties->getUserSettings()->setValue (XMLKEYLOWPASS, lowpassSettings.get());
         appProperties->getUserSettings()->save();
@@ -358,11 +360,16 @@ void MainContentComponent::estimateMelody()
     }
 }
 
-void MainContentComponent::computeHighpassCoefficient(const double cutoffFreq, const double sampleRate)
+void MainContentComponent::updateHighpassCoefficient(const double cutoffFreq, const double sampleRate)
 {
-    auto firstHighpass = dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, cutoffFreq);//Q =1/sqrt(2)
+    auto firstHighpass = dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, cutoffFreq);
     *highpass.get<0>().state = *firstHighpass;
-    auto secondHighpass = dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, cutoffFreq);//Q =1/sqrt(2)
+    auto secondHighpass = dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, cutoffFreq);
     *highpass.get<1>().state = *secondHighpass;
+}
+
+void MainContentComponent::updateLowpassCoefficient(const double cutoffFreq, const double sampleRate)
+{
+    *lowpass.state = *dsp::IIR::Coefficients<float>::makeLowPass(sampleRate, cutoffFreq);
 }
 
