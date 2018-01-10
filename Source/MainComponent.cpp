@@ -13,7 +13,7 @@ MainContentComponent::MainContentComponent()
     sl_noiseGateThreshold.setTextBoxStyle (Slider::TextBoxLeft, false, 80, sl_noiseGateThreshold.getTextBoxHeight());
     sl_noiseGateThreshold.addListener(this);
     addAndMakeVisible(lbl_noiseGate);
-    lbl_noiseGate.setText("Noise Gate Threshold", NotificationType::dontSendNotification);
+    lbl_noiseGate.setText("Noise Gate Threshold", dontSendNotification);
     lbl_noiseGate.setFont(Font (Font::getDefaultMonospacedFontName(), 15.00f, Font::plain).withTypefaceStyle ("Regular"));
     lbl_noiseGate.setJustificationType (Justification::centredLeft);
     lbl_noiseGate.setEditable (false, false, false);
@@ -27,7 +27,7 @@ MainContentComponent::MainContentComponent()
     sl_hpf.setTextBoxStyle(Slider::TextBoxBelow, false, 45, 15);
     sl_hpf.addListener(this);
     addAndMakeVisible(lbl_hpf);
-    lbl_hpf.setText("High-pass Filter", NotificationType::dontSendNotification);
+    lbl_hpf.setText("High-pass Filter", dontSendNotification);
     lbl_hpf.setFont (Font (Font::getDefaultMonospacedFontName(), 15.00f, Font::plain).withTypefaceStyle ("Regular"));
     lbl_hpf.setJustificationType (Justification::centredLeft);
     lbl_hpf.setEditable (false, false, false);
@@ -43,7 +43,7 @@ MainContentComponent::MainContentComponent()
     sl_lpf.setTextBoxStyle(Slider::TextBoxBelow, false, 45, 15);
     sl_lpf.addListener(this);
     addAndMakeVisible(lbl_lpf);
-    lbl_lpf.setText("Low-pass Filter", NotificationType::dontSendNotification);
+    lbl_lpf.setText("Low-pass Filter", dontSendNotification);
     lbl_lpf.setFont (Font (Font::getDefaultMonospacedFontName(), 15.00f, Font::plain).withTypefaceStyle ("Regular"));
     lbl_lpf.setJustificationType (Justification::centredLeft);
     lbl_lpf.setEditable (false, false, false);
@@ -52,13 +52,13 @@ MainContentComponent::MainContentComponent()
     tgl_lpf.addListener(this);
     
     addAndMakeVisible (lbl_appName);
-    lbl_appName.setText("Melody Estimator", NotificationType::dontSendNotification);
+    lbl_appName.setText("Melody Estimator", dontSendNotification);
     lbl_appName.setFont (Font (Font::getDefaultMonospacedFontName(), 21.00f, Font::plain).withTypefaceStyle ("Regular"));
     lbl_appName.setJustificationType (Justification::centredLeft);
     lbl_appName.setEditable (false, false, false);
     addAndMakeVisible (lbl_version);
     std::string version = "ver" + std::string(ProjectInfo::versionString);
-    lbl_version.setText(version, NotificationType::dontSendNotification);
+    lbl_version.setText(version, dontSendNotification);
     lbl_version.setFont (Font (Font::getDefaultMonospacedFontName(), 14.00f, Font::plain).withTypefaceStyle ("Regular"));
     lbl_version.setJustificationType (Justification::centredLeft);
     lbl_version.setEditable (false, false, false);
@@ -271,6 +271,7 @@ void MainContentComponent::menuItemSelected(int menuItemID, int topLevelMenuInde
 
 void MainContentComponent::buttonClicked (Button* button)
 {
+    
     if(button == &tgl_hpf)
     {
         bool hpfEnable = button->getToggleState();
