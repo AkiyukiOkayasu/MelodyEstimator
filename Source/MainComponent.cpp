@@ -279,6 +279,14 @@ void MainContentComponent::buttonClicked (Button* button)
         appProperties->getUserSettings()->setValue (XMLKEYHIGHPASS, highpassSettings.get());
         appProperties->getUserSettings()->save();
     }
+    else if(button == &tgl_lpf)
+    {
+        bool lpfEnable = button->getToggleState();
+        sl_lpf.setEnabled(lpfEnable);
+        lowpassSettings->setAttribute("enable", lpfEnable);
+        appProperties->getUserSettings()->setValue (XMLKEYLOWPASS, lowpassSettings.get());
+        appProperties->getUserSettings()->save();
+    }
 }
 
 void MainContentComponent::showAudioSettings()
