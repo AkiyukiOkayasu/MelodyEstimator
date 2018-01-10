@@ -14,9 +14,6 @@ struct CustomLookAndFeel    : public LookAndFeel_V4
         setColour(Slider::backgroundColourId, Colour::Colour(0xFF121258));
         setColour(Slider::textBoxTextColourId, Colours::white);
         setColour(Slider::textBoxOutlineColourId, Colours::white);
-        setColour(ComboBox::backgroundColourId , Colour::Colour(0x00000000));
-        setColour(ComboBox::buttonColourId , Colour::Colour(0x00000000));
-        setColour(ComboBox::outlineColourId , Colours::white);
         setColour(Label::textColourId, Colours::white);
     }
 };
@@ -25,7 +22,7 @@ class MainContentComponent :
 public AudioAppComponent,
 public MenuBarModel,
 public Slider::Listener,
-public ComboBox::Listener,
+public Button::Listener,
 private Timer
 {
 public:
@@ -39,9 +36,9 @@ public:
     void paint (Graphics& g) override;
     void resized() override;
     void sliderValueChanged (Slider* slider) override;
-    void comboBoxChanged (ComboBox* comboBox) override;
     StringArray getMenuBarNames() override;
     PopupMenu getMenuForIndex (int topLevelMenuIndex, const String& /*menuName*/) override;
+    void buttonClicked (Button* button) override;
     void menuItemSelected(int menuItemID, int topLevelMenuIndex) override;
     void showAudioSettings();
     //==============================================================================
@@ -89,8 +86,9 @@ private:
     Slider sl_noiseGateThreshold;
     Label lbl_noiseGate;
     //ハイパスフィルター
-    ComboBox cmb_hpf;
+    Slider sl_hpf;
     Label lbl_hpf;
+    ToggleButton tgl_hpf;
     //アプリ名,バージョン表示
     Label lbl_appName;
     Label lbl_version;
@@ -98,11 +96,7 @@ private:
     ScopedPointer<dsp::Oversampling<float>> oversampling;
     static const int overSampleFactor = 2;//2^overSampleFactor
     using iir = dsp::ProcessorDuplicator<dsp::IIR::Filter<float>, dsp::IIR::Coefficients<float>>;
-    struct highpassAndEnable{
-        dsp::ProcessorChain<iir, iir> processor;
-        bool enabled = false;
-    };
-    highpassAndEnable highpass;
+    dsp::ProcessorChain<iir, iir> highpass;
     CustomLookAndFeel lookAndFeel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)

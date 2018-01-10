@@ -11,7 +11,6 @@ MainContentComponent::MainContentComponent()
     sl_noiseGateThreshold.setTextValueSuffix("dB");
     sl_noiseGateThreshold.setSliderStyle (Slider::LinearBar);
     sl_noiseGateThreshold.setTextBoxStyle (Slider::TextBoxLeft, false, 80, sl_noiseGateThreshold.getTextBoxHeight());
-//    sl_noiseGateThreshold.setColour (Slider::trackColourId, Colour::Colour(109, 186, 229));
     sl_noiseGateThreshold.addListener(this);
     addAndMakeVisible(lbl_noiseGate);
     lbl_noiseGate.setText("Noise Gate Threshold", NotificationType::dontSendNotification);
@@ -21,31 +20,26 @@ MainContentComponent::MainContentComponent()
     lbl_noiseGate.attachToComponent(&sl_noiseGateThreshold, true);
     
     //GUI Highpass filter
-    addAndMakeVisible (cmb_hpf);
-    cmb_hpf.setEditableText (false);
-    cmb_hpf.setJustificationType (Justification::centred);
-    cmb_hpf.addItem (TRANS("OFF"), 1);
-    cmb_hpf.addSeparator();
-    cmb_hpf.addItem (TRANS("20Hz"), 2);
-    cmb_hpf.addItem (TRANS("40Hz"), 3);
-    cmb_hpf.addItem (TRANS("60Hz"), 4);
-    cmb_hpf.addItem (TRANS("80Hz"), 5);
-    cmb_hpf.addItem (TRANS("100Hz"), 6);
-    cmb_hpf.addItem (TRANS("120Hz"), 7);
-    cmb_hpf.addListener (this);
+    addAndMakeVisible(sl_hpf);
+    sl_hpf.setRange(20.0, 120.0, 1.0);
+    sl_hpf.setTextValueSuffix("Hz");
+    sl_hpf.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    sl_hpf.setTextBoxStyle(Slider::TextBoxBelow, false, 45, 15);
+    sl_hpf.addListener(this);
     addAndMakeVisible(lbl_hpf);
     lbl_hpf.setText("High-pass Filter", NotificationType::dontSendNotification);
     lbl_hpf.setFont (Font (Font::getDefaultMonospacedFontName(), 15.00f, Font::plain).withTypefaceStyle ("Regular"));
     lbl_hpf.setJustificationType (Justification::centredLeft);
     lbl_hpf.setEditable (false, false, false);
-    lbl_hpf.attachToComponent(&cmb_hpf, true);
+    lbl_hpf.attachToComponent(&sl_hpf, true);
+    addAndMakeVisible(tgl_hpf);
+    tgl_hpf.addListener(this);
     
     addAndMakeVisible (lbl_appName);
     lbl_appName.setText("Melody Estimator", NotificationType::dontSendNotification);
     lbl_appName.setFont (Font (Font::getDefaultMonospacedFontName(), 21.00f, Font::plain).withTypefaceStyle ("Regular"));
     lbl_appName.setJustificationType (Justification::centredLeft);
     lbl_appName.setEditable (false, false, false);
-    
     addAndMakeVisible (lbl_version);
     std::string version = "ver" + std::string(ProjectInfo::versionString);
     lbl_version.setText(version, NotificationType::dontSendNotification);
@@ -84,7 +78,7 @@ MainContentComponent::MainContentComponent()
     std::cout<<"MIDI port: "<<midiOut->getName()<<std::endl;
     midiOut->startBackgroundThread();
     
-    setSize (600, 140);
+    setSize (600, 200);
     
     //保存したパラメータをXMLファイルから呼び出し
     PropertiesFile::Options options;
@@ -102,6 +96,11 @@ MainContentComponent::MainContentComponent()
     cmb_hpf.setSelectedItemIndex(hpfIndex);
     sl_noiseGateThreshold.setValue(thrsld, NotificationType::dontSendNotification);
     setAudioChannels (1, 0, savedAudioState);
+    const double hpfFreq = highpassSettings != nullptr ? highpassSettings->getDoubleAttribute("freq") : 20.0;
+    const bool hpfEnable = highpassSettings != nullptr ? highpassSettings->getBoolAttribute("enable") : false;
+    sl_hpf.setEnabled(hpfEnable);
+    sl_hpf.setValue(hpfFreq, dontSendNotification);
+    tgl_hpf.setToggleState(hpfEnable, dontSendNotification);
     startTimerHz(30);
 }
 
@@ -124,7 +123,7 @@ void MainContentComponent::prepareToPlay (int samplesPerBlockExpected, double sa
     oversampling = new dsp::Oversampling<float>(1, overSampleFactor, dsp::Oversampling<float>::FilterType::filterHalfBandFIREquiripple, false);
     auto channels = static_cast<uint32>(1);//1ch
     dsp::ProcessSpec spec {sampleRate, static_cast<uint32>(samplesPerBlockExpected), channels};
-    highpass.processor.prepare(spec);
+    highpass.prepare(spec);
     oversampling->initProcessing(static_cast<size_t>(samplesPerBlockExpected));
     oversampling->reset();
 }
@@ -133,7 +132,7 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
 {
     dsp::AudioBlock<float> block(*bufferToFill.buffer);
     dsp::ProcessContextReplacing<float> context(block);
-    if(highpass.enabled) highpass.processor.process(context);
+    if(tgl_hpf.getToggleState()) highpass.process(context);
     dsp::AudioBlock<float> overSampledBlock;
     overSampledBlock = oversampling->processSamplesUp(context.getInputBlock());
     
@@ -171,7 +170,7 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
 
 void MainContentComponent::releaseResources()
 {
-    highpass.processor.reset();
+    highpass.reset();
 }
 
 //==============================================================================
@@ -193,7 +192,8 @@ void MainContentComponent::resized()
     lbl_appName.setBounds (8, 16, 170, 21);
     lbl_version.setBounds (173, 16, 70, 24);
     sl_noiseGateThreshold.setBounds(175, 57, 400, 20);
-    cmb_hpf.setBounds(175, 97, 100, 23);
+    sl_hpf.setBounds(175, 97, 80, 80);
+    tgl_hpf.setBounds(160, 115, 30, 30);
 }
 
 void MainContentComponent::sliderValueChanged (Slider* slider)
@@ -207,22 +207,14 @@ void MainContentComponent::sliderValueChanged (Slider* slider)
         appProperties->getUserSettings()->setValue ("noiseGateSettings", noiseGateSettings);
         appProperties->getUserSettings()->saveIfNeeded();
     }
-}
-
-void MainContentComponent::comboBoxChanged (ComboBox* comboBox)
-{
-    if (comboBox == &cmb_hpf)
+    else if(slider == &sl_hpf)
     {
-        const int index = comboBox->getSelectedItemIndex();
-        highpass.enabled = index > 0 ? true : false;
-        if(highpass.enabled) computeHighpassCoefficient((double)index * 20.0, deviceManager.getCurrentAudioDevice()->getCurrentSampleRate());
-        
-        //スライダーの値をXMLで保存
-        String xmltag =  "highpassFilter";
-        ScopedPointer<XmlElement> highpassFilterSettings = new XmlElement(xmltag);
-        highpassFilterSettings->setAttribute("selectedItemIndex", comboBox->getSelectedItemIndex());
-        appProperties->getUserSettings()->setValue ("highpassFilterSettings", highpassFilterSettings);
-        appProperties->getUserSettings()->saveIfNeeded();
+        const double freq = slider->getValue();
+        computeHighpassCoefficient(freq, deviceManager.getCurrentAudioDevice()->getCurrentSampleRate());
+        highpassSettings->setAttribute("freq", freq);
+        appProperties->getUserSettings()->setValue (XMLKEYHIGHPASS, highpassSettings.get());
+        appProperties->getUserSettings()->save();
+    }
     }
 }
 
@@ -244,6 +236,18 @@ void MainContentComponent::menuItemSelected(int menuItemID, int topLevelMenuInde
     if (menuItemID == 1)
     {
         showAudioSettings();
+    }
+}
+
+void MainContentComponent::buttonClicked (Button* button)
+{
+    if(button == &tgl_hpf)
+    {
+        bool hpfEnable = button->getToggleState();
+        sl_hpf.setEnabled(hpfEnable);
+        highpassSettings->setAttribute("enable", hpfEnable);
+        appProperties->getUserSettings()->setValue (XMLKEYHIGHPASS, highpassSettings.get());
+        appProperties->getUserSettings()->save();
     }
 }
 
@@ -332,10 +336,8 @@ void MainContentComponent::estimateMelody()
 void MainContentComponent::computeHighpassCoefficient(const double cutoffFreq, const double sampleRate)
 {
     auto firstHighpass = dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, cutoffFreq);//Q =1/sqrt(2)
-    std::cout<<"First high-pass filter Order: "<<firstHighpass->getFilterOrder()<<std::endl;
-    *highpass.processor.get<0>().state = *firstHighpass;
+    *highpass.get<0>().state = *firstHighpass;
     auto secondHighpass = dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, cutoffFreq);//Q =1/sqrt(2)
-    std::cout<<"Second high-pass filter Order: "<<secondHighpass->getFilterOrder()<<std::endl;
-    *highpass.processor.get<1>().state = *secondHighpass;
+    *highpass.get<1>().state = *secondHighpass;
 }
 
