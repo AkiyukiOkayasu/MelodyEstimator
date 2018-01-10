@@ -118,7 +118,7 @@ MainContentComponent::MainContentComponent()
     tgl_hpf.setToggleState(hpfEnable, dontSendNotification);
     sl_lpf.setEnabled(lpfEnable);
     sl_lpf.setValue(lpfFreq, dontSendNotification);
-    tgl_lpf.setEnabled(lpfEnable);
+    tgl_lpf.setToggleState(lpfEnable, dontSendNotification);
     sl_noiseGateThreshold.setValue(thrsld, dontSendNotification);
     
     setAudioChannels (1, 0, savedAudioState.get());
