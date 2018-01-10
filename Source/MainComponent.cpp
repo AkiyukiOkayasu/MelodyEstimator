@@ -382,6 +382,6 @@ void MainContentComponent::updateHighpassCoefficient(const double cutoffFreq, co
 
 void MainContentComponent::updateLowpassCoefficient(const double cutoffFreq, const double sampleRate)
 {
-    *lowpass.state = *dsp::IIR::Coefficients<float>::makeLowPass(sampleRate, cutoffFreq);
+    *lowpass.state = *dsp::FilterDesign<float>::designFIRLowpassKaiserMethod(cutoffFreq, sampleRate, 0.2f, -24.0f);
 }
 
