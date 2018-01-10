@@ -35,6 +35,22 @@ MainContentComponent::MainContentComponent()
     addAndMakeVisible(tgl_hpf);
     tgl_hpf.addListener(this);
     
+    //GUI Lowpass filter
+    addAndMakeVisible(sl_lpf);
+    sl_lpf.setRange(2000.0, 20000.0, 1.0);
+    sl_lpf.setTextValueSuffix("Hz");
+    sl_lpf.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    sl_lpf.setTextBoxStyle(Slider::TextBoxBelow, false, 45, 15);
+    sl_lpf.addListener(this);
+    addAndMakeVisible(lbl_lpf);
+    lbl_lpf.setText("Low-pass Filter", NotificationType::dontSendNotification);
+    lbl_lpf.setFont (Font (Font::getDefaultMonospacedFontName(), 15.00f, Font::plain).withTypefaceStyle ("Regular"));
+    lbl_lpf.setJustificationType (Justification::centredLeft);
+    lbl_lpf.setEditable (false, false, false);
+    lbl_lpf.attachToComponent(&sl_lpf, true);
+    addAndMakeVisible(tgl_lpf);
+    tgl_lpf.addListener(this);
+    
     addAndMakeVisible (lbl_appName);
     lbl_appName.setText("Melody Estimator", NotificationType::dontSendNotification);
     lbl_appName.setFont (Font (Font::getDefaultMonospacedFontName(), 21.00f, Font::plain).withTypefaceStyle ("Regular"));
@@ -125,6 +141,7 @@ void MainContentComponent::prepareToPlay (int samplesPerBlockExpected, double sa
     auto channels = static_cast<uint32>(1);//1ch
     dsp::ProcessSpec spec {sampleRate, static_cast<uint32>(samplesPerBlockExpected), channels};
     highpass.prepare(spec);
+    lowpass.prepare(spec);
     oversampling->initProcessing(static_cast<size_t>(samplesPerBlockExpected));
     oversampling->reset();
 }
@@ -134,6 +151,7 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
     dsp::AudioBlock<float> block(*bufferToFill.buffer);
     dsp::ProcessContextReplacing<float> context(block);
     if(tgl_hpf.getToggleState()) highpass.process(context);
+    if(tgl_lpf.getToggleState()) lowpass.process(context);
     dsp::AudioBlock<float> overSampledBlock;
     overSampledBlock = oversampling->processSamplesUp(context.getInputBlock());
     
@@ -172,6 +190,7 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
 void MainContentComponent::releaseResources()
 {
     highpass.reset();
+    lowpass.reset();
 }
 
 //==============================================================================
@@ -195,6 +214,8 @@ void MainContentComponent::resized()
     sl_noiseGateThreshold.setBounds(175, 57, 400, 20);
     sl_hpf.setBounds(175, 97, 80, 80);
     tgl_hpf.setBounds(160, 115, 30, 30);
+    sl_lpf.setBounds(375, 97, 80, 80);
+    tgl_lpf.setBounds(360, 115, 30, 30);
 }
 
 void MainContentComponent::sliderValueChanged (Slider* slider)
@@ -216,6 +237,13 @@ void MainContentComponent::sliderValueChanged (Slider* slider)
         appProperties->getUserSettings()->setValue (XMLKEYHIGHPASS, highpassSettings.get());
         appProperties->getUserSettings()->save();
     }
+    else if(slider == &sl_lpf)
+    {
+        const double freq = slider->getValue();
+        *lowpass.state = *dsp::IIR::Coefficients<float>::makeLowPass(deviceManager.getCurrentAudioDevice()->getCurrentSampleRate(), freq);
+        lowpassSettings->setAttribute("freq", freq);
+        appProperties->getUserSettings()->setValue (XMLKEYLOWPASS, lowpassSettings.get());
+        appProperties->getUserSettings()->save();
     }
 }
 

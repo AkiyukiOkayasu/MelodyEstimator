@@ -89,6 +89,10 @@ private:
     Slider sl_hpf;
     Label lbl_hpf;
     ToggleButton tgl_hpf;
+    //ローパスフィルター
+    Slider sl_lpf;
+    Label lbl_lpf;
+    ToggleButton tgl_lpf;
     //アプリ名,バージョン表示
     Label lbl_appName;
     Label lbl_version;
@@ -97,6 +101,7 @@ private:
     static const int overSampleFactor = 2;//2^overSampleFactor
     using iir = dsp::ProcessorDuplicator<dsp::IIR::Filter<float>, dsp::IIR::Coefficients<float>>;
     dsp::ProcessorChain<iir, iir> highpass;
+    iir lowpass;
     CustomLookAndFeel lookAndFeel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
