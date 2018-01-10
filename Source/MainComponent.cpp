@@ -102,9 +102,12 @@ MainContentComponent::MainContentComponent()
     appProperties->setStorageParameters (options);
     auto userSettings = appProperties->getUserSettings();
     savedAudioState = std::unique_ptr<XmlElement>(userSettings->getXmlValue (XMLKEYAUDIOSETTINGS));//オーディオIOの設定
-    noiseGateSettings = std::unique_ptr<XmlElement>(userSettings->getXmlValue(XMLKEYNOISEGATE));//ノイズゲートの設定
-    highpassSettings = std::unique_ptr<XmlElement>(userSettings->getXmlValue(XMLKEYHIGHPASS));//ハイパスの設定
-    lowpassSettings = std::unique_ptr<XmlElement>(userSettings->getXmlValue(XMLKEYLOWPASS));//ローパスの設定
+    auto* xml_NoiseGate = userSettings->containsKey(XMLKEYNOISEGATE) ? userSettings->getXmlValue(XMLKEYNOISEGATE) : new XmlElement(XMLKEYNOISEGATE);
+    noiseGateSettings = std::unique_ptr<XmlElement>(xml_NoiseGate);//ノイズゲートの設定
+    auto* xml_highpass = userSettings->containsKey(XMLKEYHIGHPASS) ? userSettings->getXmlValue(XMLKEYHIGHPASS) : new XmlElement(XMLKEYHIGHPASS);
+    highpassSettings = std::unique_ptr<XmlElement>(xml_highpass);//ハイパスの設定
+    auto* xml_lowpass = userSettings->containsKey(XMLKEYLOWPASS) ? userSettings->getXmlValue(XMLKEYLOWPASS) : new XmlElement(XMLKEYLOWPASS);
+    lowpassSettings = std::unique_ptr<XmlElement>(xml_lowpass);//ローパスの設定
     const double thrsld = noiseGateSettings != nullptr ? noiseGateSettings->getDoubleAttribute("threshold") : -24.0;
     const double hpfFreq = highpassSettings != nullptr ? highpassSettings->getDoubleAttribute("freq") : 20.0;
     const bool hpfEnable = highpassSettings != nullptr ? highpassSettings->getBoolAttribute("enable") : false;
