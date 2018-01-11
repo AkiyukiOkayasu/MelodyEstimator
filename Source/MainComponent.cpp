@@ -68,7 +68,7 @@ MainContentComponent::MainContentComponent()
     essentia::init();
     essentia::standard::AlgorithmFactory& factory = essentia::standard::AlgorithmFactory::instance();
     const float minFreq = MidiMessage::getMidiNoteInHertz(64 - (12 * overSampleFactor), 440.0) * 0.98;
-    const float maxFreq = MidiMessage::getMidiNoteInHertz(88 - (12 * overSampleFactor), 440.0);
+    const float maxFreq = MidiMessage::getMidiNoteInHertz(95 - (12 * overSampleFactor), 440.0);
     melodyEstimate = factory.create("PredominantPitchMelodia", "minFrequency", minFreq, "maxFrequency", maxFreq, "voicingTolerance", -0.9f);//voicingToleranceパラメータは要調整 [-1.0~1.4] default:0.2(反応のしやすさ的なパラメータ)
     pitchfilter = factory.create("PitchFilter", "confidenceThreshold", 70, "minChunkSize", 35);
     
