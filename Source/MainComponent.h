@@ -113,7 +113,7 @@ private:
     Label lbl_version;
     
     ScopedPointer<dsp::Oversampling<float>> oversampling;
-    static const int overSampleFactor = 2;//2^overSampleFactor
+    static const int overSampleFactor = 1;//2^overSampleFactor
     using iir = dsp::ProcessorDuplicator<dsp::IIR::Filter<float>, dsp::IIR::Coefficients<float>>;
     dsp::ProcessorChain<iir, iir> highpass;
     dsp::ProcessorDuplicator<dsp::FIR::Filter<float>, dsp::FIR::Coefficients<float>> lowpass;
