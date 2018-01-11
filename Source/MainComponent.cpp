@@ -14,7 +14,7 @@ MainContentComponent::MainContentComponent()
     sl_noiseGateThreshold.addListener(this);
     addAndMakeVisible(lbl_noiseGate);
     lbl_noiseGate.setText("Noise Gate", dontSendNotification);
-    lbl_noiseGate.setFont(Font (Font::getDefaultMonospacedFontName(), 15.00f, Font::plain).withTypefaceStyle ("Regular"));
+    lbl_noiseGate.setFont(Font (Font::getDefaultMonospacedFontName(), 14.00f, Font::plain).withTypefaceStyle ("Regular"));
     lbl_noiseGate.setJustificationType (Justification::centredLeft);
     lbl_noiseGate.setEditable (false, false, false);
     lbl_noiseGate.attachToComponent(&sl_noiseGateThreshold, false);
