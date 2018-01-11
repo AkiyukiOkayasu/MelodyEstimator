@@ -13,11 +13,11 @@ MainContentComponent::MainContentComponent()
     sl_noiseGateThreshold.setTextBoxStyle (Slider::TextBoxLeft, false, 80, sl_noiseGateThreshold.getTextBoxHeight());
     sl_noiseGateThreshold.addListener(this);
     addAndMakeVisible(lbl_noiseGate);
-    lbl_noiseGate.setText("Noise Gate Threshold", dontSendNotification);
+    lbl_noiseGate.setText("Noise Gate", dontSendNotification);
     lbl_noiseGate.setFont(Font (Font::getDefaultMonospacedFontName(), 15.00f, Font::plain).withTypefaceStyle ("Regular"));
     lbl_noiseGate.setJustificationType (Justification::centredLeft);
     lbl_noiseGate.setEditable (false, false, false);
-    lbl_noiseGate.attachToComponent(&sl_noiseGateThreshold, true);
+    lbl_noiseGate.attachToComponent(&sl_noiseGateThreshold, false);
     
     //GUI Highpass filter
     addAndMakeVisible(sl_hpf);
@@ -27,7 +27,7 @@ MainContentComponent::MainContentComponent()
     sl_hpf.setTextBoxStyle(Slider::TextBoxBelow, false, 60, 15);
     sl_hpf.addListener(this);
     addAndMakeVisible(lbl_hpf);
-    lbl_hpf.setText("High-pass Filter", dontSendNotification);
+    lbl_hpf.setText("HPF", dontSendNotification);
     lbl_hpf.setFont (Font (Font::getDefaultMonospacedFontName(), 14.00f, Font::plain).withTypefaceStyle ("Regular"));
     lbl_hpf.setJustificationType (Justification::centredLeft);
     lbl_hpf.setEditable (false, false, false);
@@ -43,7 +43,7 @@ MainContentComponent::MainContentComponent()
     sl_lpf.setTextBoxStyle(Slider::TextBoxBelow, false, 60, 15);
     sl_lpf.addListener(this);
     addAndMakeVisible(lbl_lpf);
-    lbl_lpf.setText("Low-pass Filter", dontSendNotification);
+    lbl_lpf.setText("LPF", dontSendNotification);
     lbl_lpf.setFont (Font (Font::getDefaultMonospacedFontName(), 14.00f, Font::plain).withTypefaceStyle ("Regular"));
     lbl_lpf.setJustificationType (Justification::centredLeft);
     lbl_lpf.setEditable (false, false, false);
@@ -91,7 +91,7 @@ MainContentComponent::MainContentComponent()
         midiOut->startBackgroundThread();
     }
     
-    setSize (600, 200);
+    setSize (420, 190);
     
     //保存したパラメータをXMLファイルから呼び出し
     PropertiesFile::Options options;
@@ -204,8 +204,8 @@ void MainContentComponent::paint (Graphics& g)
     level = jmax<float>(level, sl_noiseGateThreshold.getMinimum());
     auto range = sl_noiseGateThreshold.getRange();
     const float gain = (level - range.getStart()) / range.getLength();
-    g.fillAll(Colour::Colour(0xFFFCFCFC));
-    auto meterArea = Rectangle<int>(175, 77, 400, 10);
+    g.fillAll(Colour::Colour(0xFFF9F9F4));
+    auto meterArea = Rectangle<int>(8, 80, 400, 10);
     meterArea.removeFromRight(meterArea.getWidth() * (1.0 - gain));
     g.setColour(Colour::Colour(0xFFA9FDAC));
     g.fillRoundedRectangle (meterArea.toFloat(), 0.0);
@@ -213,13 +213,13 @@ void MainContentComponent::paint (Graphics& g)
 
 void MainContentComponent::resized()
 {
-    lbl_appName.setBounds (8, 16, 170, 21);
-    lbl_version.setBounds (173, 16, 70, 24);
-    sl_noiseGateThreshold.setBounds(175, 57, 400, 20);
-    sl_hpf.setBounds(175, 97, 80, 85);
-    tgl_hpf.setBounds(168, 137, 30, 30);
-    sl_lpf.setBounds(375, 97, 80, 85);
-    tgl_lpf.setBounds(368, 137, 30, 30);
+    lbl_appName.setBounds (4, 8, 170, 21);
+    lbl_version.setBounds (173, 8, 70, 24);
+    sl_noiseGateThreshold.setBounds(8, 60, 400, 20);
+    sl_hpf.setBounds(95, 97, 80, 85);
+    tgl_hpf.setBounds(87, 140, 30, 30);
+    sl_lpf.setBounds(260, 97, 80, 85);
+    tgl_lpf.setBounds(252, 140, 30, 30);
 }
 
 void MainContentComponent::sliderValueChanged (Slider* slider)
