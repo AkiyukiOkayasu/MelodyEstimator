@@ -67,10 +67,10 @@ MainContentComponent::MainContentComponent()
     preApplyEssentia.buffer.setSize(1, lengthToEstimateMelody_sample);
     essentia::init();
     essentia::standard::AlgorithmFactory& factory = essentia::standard::AlgorithmFactory::instance();
-    const float minFreq = MidiMessage::getMidiNoteInHertz(64 - (12 * overSampleFactor), 440.0) * 0.98;
+    const float minFreq = MidiMessage::getMidiNoteInHertz(45 - (12 * overSampleFactor), 440.0) * 0.98;
     const float maxFreq = MidiMessage::getMidiNoteInHertz(95 - (12 * overSampleFactor), 440.0);
     melodyEstimate = factory.create("PredominantPitchMelodia", "minFrequency", minFreq, "maxFrequency", maxFreq, "voicingTolerance", -0.9f);//voicingToleranceパラメータは要調整 [-1.0~1.4] default:0.2(反応のしやすさ的なパラメータ)
-    pitchfilter = factory.create("PitchFilter", "confidenceThreshold", 70, "minChunkSize", 35);
+    pitchfilter = factory.create("PitchFilter", "confidenceThreshold", 90, "minChunkSize", 40);
     
     essentiaInput.reserve(lengthToEstimateMelody_sample);
     essentiaInput.resize(lengthToEstimateMelody_sample, 0.0f);
@@ -354,12 +354,12 @@ void MainContentComponent::estimateMelody()
     std::vector<int> noteArray(essentiaFreq.size(), -1);
     std::transform(essentiaFreq.begin(), essentiaFreq.end(), std::back_inserter(noteArray), freqToNote);
     
-    const int numConsecutive = 12;
+    const int numConsecutive = 16;
     const int noteOffset = 12 * overSampleFactor;//オーバーサンプリングの影響でオクターブ下に推定されてしまっている
     for (int i = 0; i < noteArray.size() - numConsecutive; ++i)
     {
         const int target = noteArray[i];
-        if  (target != -1 && target != lastNote)
+        if  (target != -1 && target != lastNote && (target + noteOffset) >= 57)
         {
             bool isEnoughConsecutive = std::all_of(noteArray.begin() + i, noteArray.begin() + i + numConsecutive, [target](int x){return x == target;});
             if (isEnoughConsecutive)
