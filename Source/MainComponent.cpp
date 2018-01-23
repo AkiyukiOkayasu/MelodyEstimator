@@ -67,8 +67,8 @@ MainContentComponent::MainContentComponent()
     preApplyEssentia.buffer.setSize(1, lengthToEstimateMelody_sample);
     essentia::init();
     essentia::standard::AlgorithmFactory& factory = essentia::standard::AlgorithmFactory::instance();
-    const float minFreq = MidiMessage::getMidiNoteInHertz(45 - (12 * overSampleFactor), 440.0) * 0.98;
-    const float maxFreq = MidiMessage::getMidiNoteInHertz(95 - (12 * overSampleFactor), 440.0);
+    const float minFreq = MidiMessage::getMidiNoteInHertz((minNoteToEstimate - 5) - (12 * overSampleFactor), standardPitch);//minNoteToEstimateの完全四度下まで処理する
+    const float maxFreq = MidiMessage::getMidiNoteInHertz(maxNoteToEstimate - (12 * overSampleFactor), standardPitch);
     melodyEstimate = factory.create("PredominantPitchMelodia", "minFrequency", minFreq, "maxFrequency", maxFreq, "voicingTolerance", -0.9f);//voicingToleranceパラメータは要調整 [-1.0~1.4] default:0.2(反応のしやすさ的なパラメータ)
     pitchfilter = factory.create("PitchFilter", "confidenceThreshold", 90, "minChunkSize", 40);
     
@@ -349,24 +349,24 @@ void MainContentComponent::estimateMelody()
     
     //周波数->MIDIノート変換
     auto freqToNote = [](float hz)->int{
-        return hz >= 20.0 ? std::nearbyint(69.0 + 12.0 * log2(hz / 440.0)): -1;//20Hz以下の時は-1を返す
+        return hz >= 20.0 ? std::nearbyint(69.0 + 12.0 * log2(hz / standardPitch)): -1;//20Hz以下の時は-1を返す
     };
     std::vector<int> noteArray(essentiaFreq.size(), -1);
     std::transform(essentiaFreq.begin(), essentiaFreq.end(), std::back_inserter(noteArray), freqToNote);
     
     const int numConsecutive = 16;
-    const int noteOffset = 12 * overSampleFactor;//オーバーサンプリングの影響でオクターブ下に推定されてしまっている
+    const int noteOffset = 12 * overSampleFactor;//オーバーサンプリングの影響でオクターブ下に推定されてしまっているのを補正
     for (int i = 0; i < noteArray.size() - numConsecutive; ++i)
     {
-        const int target = noteArray[i];
-        if  (target != -1 && target != lastNote && (target + noteOffset) >= 57)
+        const int target = noteArray[i] != -1 ? noteArray[i] + noteOffset : -1;
+        if  (target != -1 && target != lastNote && minNoteToEstimate <= target && target <= maxNoteToEstimate)
         {
-            bool isEnoughConsecutive = std::all_of(noteArray.begin() + i, noteArray.begin() + i + numConsecutive, [target](int x){return x == target;});
+            bool isEnoughConsecutive = std::all_of(noteArray.begin() + i, noteArray.begin() + i + numConsecutive, [target](int x){return x + noteOffset == target;});
             if (isEnoughConsecutive)
             {
                 lastNote = target;
-                sendOSC(oscAddress_note, lastNote + noteOffset);
-                sendMIDI(lastNote + noteOffset);
+                sendOSC(oscAddress_note, lastNote);
+                sendMIDI(lastNote);
             }
         }
     }
