@@ -37,7 +37,7 @@ MainContentComponent::MainContentComponent()
     
     //GUI Lowpass filter
     addAndMakeVisible(sl_lpf);
-    sl_lpf.setRange(3200.0, 20000.0, 100.0);
+    sl_lpf.setRange(1000.0, 20000.0, 100.0);
     sl_lpf.setTextValueSuffix("Hz");
     sl_lpf.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     sl_lpf.setTextBoxStyle(Slider::TextBoxBelow, false, 60, 15);
