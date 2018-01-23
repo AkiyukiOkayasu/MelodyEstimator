@@ -68,7 +68,6 @@ private:
     void updateHighpassCoefficient(const double cutoffFreq, const double sampleRate);
     void updateLowpassCoefficient(const double cutoffFreq, const double sampleRate);
     
-    static const int lengthToEstimateMelody_sample = 8192;//8192サンプルごとにメロディー推定を行う
     struct bufferAndIndex{
         AudioSampleBuffer buffer;//Essentiaでメロディー推定するための直近8192サンプルを保持するバッファー
         int index = 0;
@@ -78,11 +77,11 @@ private:
     //OSC
     OSCSender oscSender;
     const String ip = "127.0.0.1";
-    static const int port = 8080;
+    static constexpr int port = 8080;
     const String oscAddress_note = "/melodyEstimator/note";
     
     //MIDI
-    static const int midiChannel = 1;
+    static constexpr int midiChannel = 1;
     const String midiPortName = "MelodyEstimator";
     ScopedPointer<MidiOutput> midiOut;
     MidiMessage midiMessage;
