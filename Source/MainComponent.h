@@ -68,6 +68,7 @@ private:
     void updateHighpassCoefficient(const double cutoffFreq, const double sampleRate);
     void updateLowpassCoefficient(const double cutoffFreq, const double sampleRate);
     
+    static constexpr int lengthToEstimateMelody_sample = 8192;//8192サンプルごとにメロディー推定を行う
     struct bufferAndIndex{
         AudioSampleBuffer buffer;//Essentiaでメロディー推定するための直近8192サンプルを保持するバッファー
         int index = 0;
