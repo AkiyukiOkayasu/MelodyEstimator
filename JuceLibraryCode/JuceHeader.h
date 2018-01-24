@@ -40,7 +40,7 @@
 namespace ProjectInfo
 {
     const char* const  projectName    = "MelodyEstimator";
-    const char* const  versionString  = "0.7.1";
-    const int          versionNumber  = 0x701;
+    const char* const  versionString  = "0.7.5";
+    const int          versionNumber  = 0x705;
 }
 #endif
