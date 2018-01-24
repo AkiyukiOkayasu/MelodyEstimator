@@ -62,7 +62,6 @@ public:
 private:
     //==============================================================================
     void timerCallback() override;
-    void sendOSC(String oscAddress, int value);
     void sendMIDI(int noteNumber);
     void estimateMelody();
     void updateHighpassCoefficient(const double cutoffFreq, const double sampleRate);
@@ -77,12 +76,6 @@ private:
         int index = 0;
     };
     bufferAndIndex preApplyEssentia;
-    
-    //OSC
-    OSCSender oscSender;
-    const String ip = "127.0.0.1";
-    static constexpr int port = 8080;
-    const String oscAddress_note = "/melodyEstimator/note";
     
     //MIDI
     static constexpr int midiChannel = 1;

@@ -84,7 +84,6 @@ MainContentComponent::MainContentComponent()
     pitchfilter->input("pitchConfidence").set(essentiaPitchConfidence);
     pitchfilter->output("pitchFiltered").set(essentiaFreq);
     
-    if(!oscSender.connect(ip, port)) std::cout<<"OSC connection Error..."<<std::endl;
     midiOut = MidiOutput::createNewDevice(midiPortName);
     if(midiOut != nullptr) {
         std::cout<<"MIDI port: "<<midiOut->getName()<<std::endl;
@@ -323,12 +322,6 @@ void MainContentComponent::timerCallback()
     repaint();
 }
 
-
-void MainContentComponent::sendOSC(String oscAddress, int value)
-{
-    oscSender.send(oscAddress, value);
-}
-
 void MainContentComponent::sendMIDI(int noteNumber)
 {
     if (midiMessage.isNoteOn())
@@ -365,7 +358,6 @@ void MainContentComponent::estimateMelody()
             if (isEnoughConsecutive)
             {
                 lastNote = target;
-                sendOSC(oscAddress_note, lastNote);
                 sendMIDI(lastNote);
             }
         }
