@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="B5zO5T" name="MelodyEstimator" displaySplashScreen="0" reportAppUsage="0"
-              splashScreenColour="Dark" projectType="guiapp" version="0.7.5"
+              splashScreenColour="Dark" projectType="guiapp" version="0.7.7"
               bundleIdentifier="net.tkrworks.MelodyEstimator" includeBinaryInAppConfig="1"
               cppLanguageStandard="14" jucerVersion="5.2.0" companyCopyright="">
   <MAINGROUP id="vzmZaj" name="MelodyEstimator">
