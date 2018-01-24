@@ -68,8 +68,8 @@ private:
     void updateLowpassCoefficient(const double cutoffFreq, const double sampleRate);
     
     static constexpr int lengthToEstimateMelody_sample = 8192;//8192サンプルごとにメロディー推定を行う
-    static constexpr int minNoteToEstimate = 48;//推定音域下限C2
-    static constexpr int maxNoteToEstimate = 96;//推定音域上限C6
+    static constexpr int minNoteToEstimate = 33;//推定音域下限C2
+    static constexpr int maxNoteToEstimate = 120;//推定音域上限C6
     static constexpr float standardPitch = 440.0f;//A=440Hz
     struct bufferAndIndex{
         AudioSampleBuffer buffer;//Essentiaでメロディー推定するための直近8192サンプルを保持するバッファー
