@@ -69,7 +69,7 @@ private:
     void updateLowpassCoefficient(const double cutoffFreq, const double sampleRate);
     
     static constexpr int lengthToEstimateMelody_sample = 8192;//8192サンプルごとにメロディー推定を行う
-    static constexpr int minNoteToEstimate = 57;//推定音域下限A2
+    static constexpr int minNoteToEstimate = 59;//推定音域下限B2
     static constexpr int maxNoteToEstimate = 89;//推定音域上限F5
     static constexpr float standardPitch = 440.0f;//A=440Hz
     struct bufferAndIndex{
