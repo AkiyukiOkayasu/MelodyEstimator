@@ -15,6 +15,7 @@ struct CustomLookAndFeel    : public LookAndFeel_V4
 {
     CustomLookAndFeel()
     {
+        setColour(ResizableWindow::backgroundColourId, Colour::Colour(0xFFF9F9F4));
         setColour(Slider::thumbColourId, Colour::Colour(0xFFAED1E6));//ロータリーエンコーダーのつまみ
         setColour(Slider::rotarySliderFillColourId, Colour::Colour(0xFFC6DBF0));//ロータリーエンコーダーの外周(有効範囲)
         setColour(Slider::rotarySliderOutlineColourId, Colour::Colour(0xFF2B2B2A));//ロータリーエンコーダーの外周(非有効範囲)
