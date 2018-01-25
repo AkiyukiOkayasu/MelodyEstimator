@@ -348,13 +348,12 @@ void MainContentComponent::estimateMelody()
     std::transform(essentiaFreq.begin(), essentiaFreq.end(), std::back_inserter(noteArray), freqToNote);
     
     const int numConsecutive = 12;
-    const int noteOffset = 12 * overSampleFactor;//オーバーサンプリングの影響でオクターブ下に推定されてしまっているのを補正
     for (int i = 0; i < noteArray.size() - numConsecutive; ++i)
     {
-        const int target = noteArray[i] != -1 ? noteArray[i] + noteOffset : -1;
-        if  (target != -1 && target != lastNote && minNoteToEstimate <= target && target <= maxNoteToEstimate)
+        const int target = noteArray[i] != -1 ? noteArray[i] % 12 : -1;
+        if  (target != -1 && target != lastNote)
         {
-            bool isEnoughConsecutive = std::all_of(noteArray.begin() + i, noteArray.begin() + i + numConsecutive, [target](int x){return x + noteOffset == target;});
+            bool isEnoughConsecutive = std::all_of(noteArray.begin() + i, noteArray.begin() + i + numConsecutive, [target](int x){return x % 12 == target;});
             if (isEnoughConsecutive)
             {
                 lastNote = target;
