@@ -9,7 +9,7 @@ Commentary(in Japasene) is [here](https://qiita.com/AkiyukiOkayasu/items/7b5a067
 
 ## Feature  
 - Estimating the melody from streaming audio in real-time.  
-- Sending MIDI and OSC estimate result.  
+- Sending MIDI that estimated result.  
 <br>
 
 ## System Requirements    
