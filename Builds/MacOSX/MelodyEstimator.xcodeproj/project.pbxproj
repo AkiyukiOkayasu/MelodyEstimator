@@ -100,7 +100,7 @@
 					8767CF2153C25B28DA1E77A1,
 					2FA343414CCEF7D9065C78DB,
 					98749F00DE7AA881627CBBAB,
-					4B2F15696B6C7A2E8418701B, ); name = "Juce Modules"; sourceTree = "<group>"; };
+					4B2F15696B6C7A2E8418701B, ); name = "JUCE Modules"; sourceTree = "<group>"; };
 		BA7E5EA1552AFBCB0FD7D932 = {isa = PBXGroup; children = (
 					76DDCC921FF3AC637915DD61,
 					76C0382778AABF8F1F961CBC,
@@ -117,7 +117,7 @@
 					13B1EB660502035B93985C23,
 					C02E60E069F1C363BBAF110F,
 					FD319D4A2ED0CD38136E0047,
-					F46709F40EE95202A00CAED3, ); name = "Juce Library Code"; sourceTree = "<group>"; };
+					F46709F40EE95202A00CAED3, ); name = "JUCE Library Code"; sourceTree = "<group>"; };
 		0F73D4DB3FC67ADAF95D0907 = {isa = PBXGroup; children = (
 					86B0415D60C02BD70397FAA4,
 					6BB3FBB9666E5819AEE406AC, ); name = Resources; sourceTree = "<group>"; };
@@ -202,6 +202,7 @@
 				INFOPLIST_PREPROCESS = NO;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = ("$(inherited)", "\"$(SRCROOT)/../../EssentiaLightweightStaticLibrary/lib\"");
+				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MACOSX_DEPLOYMENT_TARGET_ppc = 10.4;
 				OTHER_LDFLAGS = "-lessentia";
@@ -323,7 +324,7 @@
 					BFFBA9EBD5AB1BC48CDCEFAF,
 					1636B0552C13530ED595F0CF,
 					6405BE859D555D504F2313A9, ); buildRules = ( ); dependencies = (  ); name = "MelodyEstimator - App"; productName = MelodyEstimator; productReference = 2FDCDA665A156F9C707F81FA; productType = "com.apple.product-type.application"; };
-		E61FB12DDC8BBD38B0340BFA = {isa = PBXProject; buildConfigurationList = 2AF356519AB1729D71B066BA; attributes = { LastUpgradeCheck = 0830; TargetAttributes = { 0CB181B58F6ED0426710581E = { SystemCapabilities = {com.apple.ApplicationGroups.iOS = { enabled = 0; }; com.apple.InAppPurchase = { enabled = 0; }; com.apple.InterAppAudio = { enabled = 0; }; com.apple.Push = { enabled = 0; }; com.apple.Sandbox = { enabled = 0; }; }; }; }; }; compatibilityVersion = "Xcode 3.2"; hasScannedForEncodings = 0; mainGroup = 34D75DFA77F360AD444CA1A9; projectDirPath = ""; projectRoot = ""; targets = (0CB181B58F6ED0426710581E); };
+		E61FB12DDC8BBD38B0340BFA = {isa = PBXProject; buildConfigurationList = 2AF356519AB1729D71B066BA; attributes = { LastUpgradeCheck = 0830; ORGANIZATIONNAME = ""; TargetAttributes = { 0CB181B58F6ED0426710581E = { SystemCapabilities = {com.apple.ApplicationGroups.iOS = { enabled = 0; }; com.apple.InAppPurchase = { enabled = 0; }; com.apple.InterAppAudio = { enabled = 0; }; com.apple.Push = { enabled = 0; }; com.apple.Sandbox = { enabled = 0; }; }; }; }; }; compatibilityVersion = "Xcode 3.2"; hasScannedForEncodings = 0; mainGroup = 34D75DFA77F360AD444CA1A9; projectDirPath = ""; projectRoot = ""; targets = (0CB181B58F6ED0426710581E); };
 	};
 	rootObject = E61FB12DDC8BBD38B0340BFA;
 }
