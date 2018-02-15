@@ -9,7 +9,7 @@ Commentary(in Japasene) is [here](https://qiita.com/AkiyukiOkayasu/items/7b5a067
 - Wide estimate pitch range(C2~C6).
 
 ## System Requirements    
-MacOS 10.12 later  
+MacOS 10.11 later  
 The sample rate must be 44100Hz, not supported other sample rates.
 
 ## Download  
