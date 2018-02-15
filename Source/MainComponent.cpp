@@ -9,22 +9,21 @@ MainContentComponent::MainContentComponent()
     addAndMakeVisible(sl_noiseGateThreshold);
     sl_noiseGateThreshold.setRange(-72.0, 0.0, 1.0);
     sl_noiseGateThreshold.setTextValueSuffix("dB");
-    sl_noiseGateThreshold.setSliderStyle (Slider::LinearBarVertical);
-    sl_noiseGateThreshold.setTextBoxStyle (Slider::TextBoxLeft, false, 80, sl_noiseGateThreshold.getTextBoxHeight());
+    sl_noiseGateThreshold.setSliderStyle (Slider::LinearVertical);
+    sl_noiseGateThreshold.setTextBoxStyle (Slider::TextBoxBelow, false, 45, 10);
     sl_noiseGateThreshold.addListener(this);
     addAndMakeVisible(lbl_noiseGate);
-    lbl_noiseGate.setText("Noise Gate", dontSendNotification);
+    lbl_noiseGate.setText("Gate", dontSendNotification);
     lbl_noiseGate.setFont(Font (Font::getDefaultMonospacedFontName(), 14.0f, Font::plain).withTypefaceStyle ("Regular"));
     lbl_noiseGate.setJustificationType (Justification::centredLeft);
     lbl_noiseGate.setEditable (false, false, false);
-    lbl_noiseGate.attachToComponent(&sl_noiseGateThreshold, false);
     
     //GUI Highpass filter
     addAndMakeVisible(sl_hpf);
     sl_hpf.setRange(18.0, 120.0, 1.0);
     sl_hpf.setTextValueSuffix("Hz");
     sl_hpf.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    sl_hpf.setTextBoxStyle(Slider::TextBoxBelow, false, 39, 13);
+    sl_hpf.setTextBoxStyle(Slider::TextBoxBelow, false, 45, 10);
     sl_hpf.addListener(this);
     addAndMakeVisible(lbl_hpf);
     lbl_hpf.setFont (Font (Font::getDefaultMonospacedFontName(), 14.0f, Font::plain).withTypefaceStyle ("Regular"));
@@ -34,7 +33,7 @@ MainContentComponent::MainContentComponent()
     addAndMakeVisible (lbl_version);
     std::string version = "ver" + std::string(ProjectInfo::versionString);
     lbl_version.setText(version, dontSendNotification);
-    lbl_version.setFont (Font (Font::getDefaultMonospacedFontName(), 9.0f, Font::plain).withTypefaceStyle ("Regular"));
+    lbl_version.setFont (Font (Font::getDefaultMonospacedFontName(), 12.0f, Font::plain).withTypefaceStyle ("Regular"));
     lbl_version.setJustificationType (Justification::centredLeft);
     lbl_version.setEditable (false, false, false);
     
@@ -86,7 +85,7 @@ MainContentComponent::MainContentComponent()
     sl_noiseGateThreshold.setValue(thrsld, dontSendNotification);
     
     setAudioChannels (1, 0, savedAudioState.get());
-    startTimerHz(30);
+    startTimerHz(60);
 }
 
 MainContentComponent::~MainContentComponent()
@@ -165,7 +164,7 @@ void MainContentComponent::paint (Graphics& g)
     auto range = sl_noiseGateThreshold.getRange();
     const float gain = (level - range.getStart()) / range.getLength();
     g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
-    auto meterArea = Rectangle<int>(60, 73, 30, 175);
+    auto meterArea = Rectangle<int>(55, 80, 40, 183);
     meterArea.removeFromTop(meterArea.getHeight() * (1.0 - gain));
     g.setColour(Colour::Colour(0xFFA9FDAC));
     g.fillRoundedRectangle (meterArea.toFloat(), 0.0);
@@ -175,6 +174,9 @@ void MainContentComponent::resized()
 {
     sl_hpf.setBounds(43, 1, 61, 70);
     lbl_hpf.setBounds(17, 24, 35, 15);
+    sl_noiseGateThreshold.setBounds(55, 80, 40, 183);
+    lbl_noiseGate.setBounds(12, 248, 42, 15);
+    lbl_version.setBounds(80, 288, 65, 12);
 }
 
 void MainContentComponent::sliderValueChanged (Slider* slider)
