@@ -82,10 +82,7 @@ MainContentComponent::MainContentComponent()
     highpassSettings = std::unique_ptr<XmlElement>(xml_highpass);//ハイパスの設定
     const double thrsld = noiseGateSettings != nullptr ? noiseGateSettings->getDoubleAttribute("threshold") : -24.0;
     const double hpfFreq = highpassSettings != nullptr ? highpassSettings->getDoubleAttribute("freq") : 20.0;
-    const bool hpfEnable = highpassSettings != nullptr ? highpassSettings->getBoolAttribute("enable") : false;
-    sl_hpf.setEnabled(hpfEnable);
     sl_hpf.setValue(hpfFreq, dontSendNotification);
-    tgl_hpf.setToggleState(hpfEnable, dontSendNotification);
     sl_noiseGateThreshold.setValue(thrsld, dontSendNotification);
     
     setAudioChannels (1, 0, savedAudioState.get());
