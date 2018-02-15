@@ -35,21 +35,6 @@ MainContentComponent::MainContentComponent()
     addAndMakeVisible(tgl_hpf);
     tgl_hpf.addListener(this);
     
-    //GUI Lowpass filter
-    addAndMakeVisible(sl_lpf);
-    sl_lpf.setRange(1000.0, 20000.0, 100.0);
-    sl_lpf.setTextValueSuffix("Hz");
-    sl_lpf.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    sl_lpf.setTextBoxStyle(Slider::TextBoxBelow, false, 60, 15);
-    sl_lpf.addListener(this);
-    addAndMakeVisible(lbl_lpf);
-    lbl_lpf.setText("LPF", dontSendNotification);
-    lbl_lpf.setFont (Font (Font::getDefaultMonospacedFontName(), 14.00f, Font::plain).withTypefaceStyle ("Regular"));
-    lbl_lpf.setJustificationType (Justification::centredLeft);
-    lbl_lpf.setEditable (false, false, false);
-    lbl_lpf.attachToComponent(&sl_lpf, true);
-    addAndMakeVisible(tgl_lpf);
-    tgl_lpf.addListener(this);
     
     addAndMakeVisible (lbl_appName);
     lbl_appName.setText("Melody Estimator", dontSendNotification);
@@ -105,19 +90,12 @@ MainContentComponent::MainContentComponent()
     noiseGateSettings = std::unique_ptr<XmlElement>(xml_NoiseGate);//ノイズゲートの設定
     auto* xml_highpass = userSettings->containsKey(XMLKEYHIGHPASS) ? userSettings->getXmlValue(XMLKEYHIGHPASS) : new XmlElement(XMLKEYHIGHPASS);
     highpassSettings = std::unique_ptr<XmlElement>(xml_highpass);//ハイパスの設定
-    auto* xml_lowpass = userSettings->containsKey(XMLKEYLOWPASS) ? userSettings->getXmlValue(XMLKEYLOWPASS) : new XmlElement(XMLKEYLOWPASS);
-    lowpassSettings = std::unique_ptr<XmlElement>(xml_lowpass);//ローパスの設定
     const double thrsld = noiseGateSettings != nullptr ? noiseGateSettings->getDoubleAttribute("threshold") : -24.0;
     const double hpfFreq = highpassSettings != nullptr ? highpassSettings->getDoubleAttribute("freq") : 20.0;
     const bool hpfEnable = highpassSettings != nullptr ? highpassSettings->getBoolAttribute("enable") : false;
-    const double lpfFreq = lowpassSettings != nullptr ? lowpassSettings->getDoubleAttribute("freq") : 20000.0;
-    const bool lpfEnable = lowpassSettings != nullptr ? lowpassSettings->getBoolAttribute("enable") : false;
     sl_hpf.setEnabled(hpfEnable);
     sl_hpf.setValue(hpfFreq, dontSendNotification);
     tgl_hpf.setToggleState(hpfEnable, dontSendNotification);
-    sl_lpf.setEnabled(lpfEnable);
-    sl_lpf.setValue(lpfFreq, dontSendNotification);
-    tgl_lpf.setToggleState(lpfEnable, dontSendNotification);
     sl_noiseGateThreshold.setValue(thrsld, dontSendNotification);
     
     setAudioChannels (1, 0, savedAudioState.get());
@@ -143,9 +121,7 @@ void MainContentComponent::prepareToPlay (int samplesPerBlockExpected, double sa
     auto channels = static_cast<uint32>(1);//モノラル入力のみ対応
     dsp::ProcessSpec spec {sampleRate, static_cast<uint32>(samplesPerBlockExpected), channels};
     highpass.prepare(spec);
-    lowpass.prepare(spec);
     updateHighpassCoefficient(sl_hpf.getValue(), sampleRate);
-    updateLowpassCoefficient(sl_lpf.getValue(), sampleRate);
     oversampling->initProcessing(static_cast<size_t>(samplesPerBlockExpected));
     oversampling->reset();
 }
@@ -155,7 +131,6 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
     dsp::AudioBlock<float> block(*bufferToFill.buffer);
     dsp::ProcessContextReplacing<float> context(block);
     if(tgl_hpf.getToggleState()) highpass.process(context);
-    if(tgl_lpf.getToggleState()) lowpass.process(context);
     dsp::AudioBlock<float> overSampledBlock;
     overSampledBlock = oversampling->processSamplesUp(context.getInputBlock());
     
@@ -193,7 +168,6 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
 void MainContentComponent::releaseResources()
 {
     highpass.reset();
-    lowpass.reset();
 }
 
 //==============================================================================
@@ -217,8 +191,6 @@ void MainContentComponent::resized()
     sl_noiseGateThreshold.setBounds(8, 60, 400, 20);
     sl_hpf.setBounds(95, 97, 80, 85);
     tgl_hpf.setBounds(87, 140, 30, 30);
-    sl_lpf.setBounds(260, 97, 80, 85);
-    tgl_lpf.setBounds(252, 140, 30, 30);
 }
 
 void MainContentComponent::sliderValueChanged (Slider* slider)
@@ -235,14 +207,6 @@ void MainContentComponent::sliderValueChanged (Slider* slider)
         updateHighpassCoefficient(freq, deviceManager.getCurrentAudioDevice()->getCurrentSampleRate());
         highpassSettings->setAttribute("freq", freq);
         appProperties->getUserSettings()->setValue (XMLKEYHIGHPASS, highpassSettings.get());
-        appProperties->getUserSettings()->save();
-    }
-    else if(slider == &sl_lpf)
-    {
-        const double freq = slider->getValue();
-        updateLowpassCoefficient(freq, deviceManager.getCurrentAudioDevice()->getCurrentSampleRate());
-        lowpassSettings->setAttribute("freq", freq);
-        appProperties->getUserSettings()->setValue (XMLKEYLOWPASS, lowpassSettings.get());
         appProperties->getUserSettings()->save();
     }
 }
@@ -277,14 +241,6 @@ void MainContentComponent::buttonClicked (Button* button)
         sl_hpf.setEnabled(hpfEnable);
         highpassSettings->setAttribute("enable", hpfEnable);
         appProperties->getUserSettings()->setValue (XMLKEYHIGHPASS, highpassSettings.get());
-        appProperties->getUserSettings()->save();
-    }
-    else if(button == &tgl_lpf)
-    {
-        bool lpfEnable = button->getToggleState();
-        sl_lpf.setEnabled(lpfEnable);
-        lowpassSettings->setAttribute("enable", lpfEnable);
-        appProperties->getUserSettings()->setValue (XMLKEYLOWPASS, lowpassSettings.get());
         appProperties->getUserSettings()->save();
     }
 }
@@ -370,10 +326,5 @@ void MainContentComponent::updateHighpassCoefficient(const double cutoffFreq, co
     *highpass.get<0>().state = *firstHighpass;
     auto secondHighpass = dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, cutoffFreq);
     *highpass.get<1>().state = *secondHighpass;
-}
-
-void MainContentComponent::updateLowpassCoefficient(const double cutoffFreq, const double sampleRate)
-{
-    *lowpass.state = *dsp::FilterDesign<float>::designFIRLowpassKaiserMethod(cutoffFreq, sampleRate, 0.2f, -24.0f);
 }
 

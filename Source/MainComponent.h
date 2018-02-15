@@ -9,7 +9,6 @@
 #define XMLKEYAUDIOSETTINGS "audioDeviceState"
 #define XMLKEYNOISEGATE "noiseGateSettings"
 #define XMLKEYHIGHPASS "highpassFilterSettings"
-#define XMLKEYLOWPASS "lowpassFilterSettings"
 
 struct CustomLookAndFeel    : public LookAndFeel_V4
 {
@@ -66,7 +65,6 @@ private:
     void sendMIDI(int noteNumber);
     void estimateMelody();
     void updateHighpassCoefficient(const double cutoffFreq, const double sampleRate);
-    void updateLowpassCoefficient(const double cutoffFreq, const double sampleRate);
     
     static constexpr int lengthToEstimateMelody_sample = 8192;//8192サンプルごとにメロディー推定を行う
     static constexpr int minNoteToEstimate = 48;//推定音域下限C2
@@ -92,7 +90,6 @@ private:
     std::unique_ptr<XmlElement> savedAudioState;
     std::unique_ptr<XmlElement> noiseGateSettings;
     std::unique_ptr<XmlElement> highpassSettings;
-    std::unique_ptr<XmlElement> lowpassSettings;
     
     //小音量時にメロディー判定を行わないようにするための閾値(dB)
     Slider sl_noiseGateThreshold;
@@ -101,10 +98,6 @@ private:
     Slider sl_hpf;
     Label lbl_hpf;
     ToggleButton tgl_hpf;
-    //ローパスフィルター
-    Slider sl_lpf;
-    Label lbl_lpf;
-    ToggleButton tgl_lpf;
     //アプリ名,バージョン表示
     Label lbl_appName;
     Label lbl_version;
@@ -113,7 +106,6 @@ private:
     static const int overSampleFactor = 1;//2^overSampleFactor
     using iir = dsp::ProcessorDuplicator<dsp::IIR::Filter<float>, dsp::IIR::Coefficients<float>>;
     dsp::ProcessorChain<iir, iir> highpass;
-    dsp::ProcessorDuplicator<dsp::FIR::Filter<float>, dsp::FIR::Coefficients<float>> lowpass;
     CustomLookAndFeel lookAndFeel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
