@@ -29,6 +29,7 @@
 #include <juce_gui_extra/juce_gui_extra.h>
 #include <juce_osc/juce_osc.h>
 
+#include "BinaryData.h"
 
 #if ! DONT_SET_USING_JUCE_NAMESPACE
  // If your code uses a lot of JUCE classes, then this will obviously save you
@@ -40,7 +41,7 @@
 namespace ProjectInfo
 {
     const char* const  projectName    = "MelodyEstimator";
-    const char* const  versionString  = "0.7.7";
-    const int          versionNumber  = 0x707;
+    const char* const  versionString  = "1.0.0";
+    const int          versionNumber  = 0x10000;
 }
 #endif
