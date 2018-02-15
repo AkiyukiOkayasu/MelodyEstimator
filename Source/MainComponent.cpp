@@ -173,9 +173,8 @@ void MainContentComponent::paint (Graphics& g)
 
 void MainContentComponent::resized()
 {
-    lbl_version.setBounds (173, 8, 70, 24);
-    sl_noiseGateThreshold.setBounds(8, 60, 400, 20);
-    sl_hpf.setBounds(95, 97, 80, 85);
+    sl_hpf.setBounds(43, 1, 61, 70);
+    lbl_hpf.setBounds(17, 24, 35, 15);
 }
 
 void MainContentComponent::sliderValueChanged (Slider* slider)
