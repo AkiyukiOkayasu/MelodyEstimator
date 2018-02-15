@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="B5zO5T" name="MelodyEstimator" displaySplashScreen="0" reportAppUsage="0"
-              splashScreenColour="Dark" projectType="guiapp" version="0.7.7"
-              bundleIdentifier="net.tkrworks.MelodyEstimator" includeBinaryInAppConfig="1"
-              cppLanguageStandard="14" jucerVersion="5.2.1" companyCopyright="">
+              splashScreenColour="Dark" projectType="guiapp" version="1.0.0"
+              bundleIdentifier="com.akiyukiokayasu.MelodyEstimator" includeBinaryInAppConfig="1"
+              cppLanguageStandard="14" jucerVersion="5.2.1" companyCopyright=""
+              companyName="Akiyuki Okayasu">
   <MAINGROUP id="vzmZaj" name="MelodyEstimator">
+    <GROUP id="{64BF8320-D070-0085-E235-895111F65201}" name="Image">
+      <FILE id="Ugwzeu" name="aoIcon.png" compile="0" resource="1" file="Image/aoIcon.png"/>
+    </GROUP>
     <GROUP id="{59941E62-1EB3-B713-D6F7-407A2A2F1A24}" name="Source">
       <FILE id="TuYjnH" name="MainComponent.cpp" compile="1" resource="0"
             file="Source/MainComponent.cpp"/>
@@ -13,16 +17,17 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <XCODE_MAC targetFolder="Builds/MacOSX" externalLibraries="essentia">
+    <XCODE_MAC targetFolder="Builds/MacOSX" externalLibraries="essentia" smallIcon="Ugwzeu"
+               bigIcon="Ugwzeu">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="MelodyEstimator"
                        headerPath="$(SRCROOT)/../../EssentiaLightweightStaticLibrary/include"
                        libraryPath="$(SRCROOT)/../../EssentiaLightweightStaticLibrary/lib"
-                       enablePluginBinaryCopyStep="1" osxCompatibility="10.12 SDK"/>
+                       enablePluginBinaryCopyStep="1" osxCompatibility="10.11 SDK"/>
         <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="MelodyEstimator"
                        headerPath="$(SRCROOT)/../../EssentiaLightweightStaticLibrary/include"
                        libraryPath="$(SRCROOT)/../../EssentiaLightweightStaticLibrary/lib"
-                       enablePluginBinaryCopyStep="1" osxCompatibility="10.12 SDK"/>
+                       enablePluginBinaryCopyStep="1" osxCompatibility="10.11 SDK"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../../Applications/JUCE/modules"/>
