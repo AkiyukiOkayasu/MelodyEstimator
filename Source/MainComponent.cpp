@@ -65,7 +65,7 @@ MainContentComponent::MainContentComponent()
         midiOut->startBackgroundThread();
     }
     
-    setSize (420, 190);
+    setSize (145, 305);
     
     //保存したパラメータをXMLファイルから呼び出し
     PropertiesFile::Options options;
