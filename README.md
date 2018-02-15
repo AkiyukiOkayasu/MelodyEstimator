@@ -4,9 +4,9 @@ This is made with [JUCE](https://github.com/WeAreROLI/JUCE) and [Essentia](https
 Commentary(in Japasene) is [here](https://qiita.com/AkiyukiOkayasu/items/7b5a0671cbfc8e704590).  
 
 ## Feature  
-- Estimating the melody from streaming audio in real-time.
-- Sending MIDI that estimated result.
+- Real-time estimating.
 - Wide estimate pitch range(C2~C6).
+- Sending MIDI that estimated result.
 
 ## System Requirements    
 MacOS 10.11 later  
