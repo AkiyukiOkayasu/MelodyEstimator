@@ -32,8 +32,6 @@ MainContentComponent::MainContentComponent()
     lbl_hpf.setJustificationType (Justification::centredLeft);
     lbl_hpf.setEditable (false, false, false);
     lbl_hpf.attachToComponent(&sl_hpf, true);
-    addAndMakeVisible(tgl_hpf);
-    tgl_hpf.addListener(this);
     
     addAndMakeVisible (lbl_version);
     std::string version = "ver" + std::string(ProjectInfo::versionString);
@@ -124,7 +122,7 @@ void MainContentComponent::getNextAudioBlock (const AudioSourceChannelInfo& buff
 {
     dsp::AudioBlock<float> block(*bufferToFill.buffer);
     dsp::ProcessContextReplacing<float> context(block);
-    if(tgl_hpf.getToggleState()) highpass.process(context);
+    highpass.process(context);
     dsp::AudioBlock<float> overSampledBlock;
     overSampledBlock = oversampling->processSamplesUp(context.getInputBlock());
     
@@ -183,7 +181,6 @@ void MainContentComponent::resized()
     lbl_version.setBounds (173, 8, 70, 24);
     sl_noiseGateThreshold.setBounds(8, 60, 400, 20);
     sl_hpf.setBounds(95, 97, 80, 85);
-    tgl_hpf.setBounds(87, 140, 30, 30);
 }
 
 void MainContentComponent::sliderValueChanged (Slider* slider)
@@ -227,15 +224,6 @@ void MainContentComponent::menuItemSelected(int menuItemID, int topLevelMenuInde
 
 void MainContentComponent::buttonClicked (Button* button)
 {
-    
-    if(button == &tgl_hpf)
-    {
-        bool hpfEnable = button->getToggleState();
-        sl_hpf.setEnabled(hpfEnable);
-        highpassSettings->setAttribute("enable", hpfEnable);
-        appProperties->getUserSettings()->setValue (XMLKEYHIGHPASS, highpassSettings.get());
-        appProperties->getUserSettings()->save();
-    }
 }
 
 void MainContentComponent::showAudioSettings()

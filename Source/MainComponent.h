@@ -97,7 +97,6 @@ private:
     //ハイパスフィルター
     Slider sl_hpf;
     Label lbl_hpf;
-    ToggleButton tgl_hpf;
     Label lbl_version;
     
     ScopedPointer<dsp::Oversampling<float>> oversampling;
