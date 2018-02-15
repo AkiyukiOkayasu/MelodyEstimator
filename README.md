@@ -13,7 +13,7 @@ MacOS 10.11 later
 The sample rate must be 44100Hz, not supported other sample rates.
 
 ## Download  
-You can download the pre-built application from [Release](https://github.com/AkiyukiOkayasu/MelodyEstimator/releases).
+You can download the pre-built application from [release](https://github.com/AkiyukiOkayasu/MelodyEstimator/releases).
 
 ## License  
 GPLv3
