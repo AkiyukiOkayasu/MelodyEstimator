@@ -98,8 +98,6 @@ private:
     Slider sl_hpf;
     Label lbl_hpf;
     ToggleButton tgl_hpf;
-    //アプリ名,バージョン表示
-    Label lbl_appName;
     Label lbl_version;
     
     ScopedPointer<dsp::Oversampling<float>> oversampling;

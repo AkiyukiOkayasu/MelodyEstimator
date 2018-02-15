@@ -35,12 +35,6 @@ MainContentComponent::MainContentComponent()
     addAndMakeVisible(tgl_hpf);
     tgl_hpf.addListener(this);
     
-    
-    addAndMakeVisible (lbl_appName);
-    lbl_appName.setText("Melody Estimator", dontSendNotification);
-    lbl_appName.setFont (Font (Font::getDefaultMonospacedFontName(), 21.00f, Font::plain).withTypefaceStyle ("Regular"));
-    lbl_appName.setJustificationType (Justification::centredLeft);
-    lbl_appName.setEditable (false, false, false);
     addAndMakeVisible (lbl_version);
     std::string version = "ver" + std::string(ProjectInfo::versionString);
     lbl_version.setText(version, dontSendNotification);
@@ -186,7 +180,6 @@ void MainContentComponent::paint (Graphics& g)
 
 void MainContentComponent::resized()
 {
-    lbl_appName.setBounds (4, 8, 170, 21);
     lbl_version.setBounds (173, 8, 70, 24);
     sl_noiseGateThreshold.setBounds(8, 60, 400, 20);
     sl_hpf.setBounds(95, 97, 80, 85);
