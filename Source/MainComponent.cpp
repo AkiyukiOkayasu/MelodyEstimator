@@ -14,7 +14,7 @@ MainContentComponent::MainContentComponent()
     sl_noiseGateThreshold.addListener(this);
     addAndMakeVisible(lbl_noiseGate);
     lbl_noiseGate.setText("Noise Gate", dontSendNotification);
-    lbl_noiseGate.setFont(Font (Font::getDefaultMonospacedFontName(), 14.00f, Font::plain).withTypefaceStyle ("Regular"));
+    lbl_noiseGate.setFont(Font (Font::getDefaultMonospacedFontName(), 14.0f, Font::plain).withTypefaceStyle ("Regular"));
     lbl_noiseGate.setJustificationType (Justification::centredLeft);
     lbl_noiseGate.setEditable (false, false, false);
     lbl_noiseGate.attachToComponent(&sl_noiseGateThreshold, false);
@@ -24,19 +24,17 @@ MainContentComponent::MainContentComponent()
     sl_hpf.setRange(20.0, 120.0, 5.0);
     sl_hpf.setTextValueSuffix("Hz");
     sl_hpf.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    sl_hpf.setTextBoxStyle(Slider::TextBoxBelow, false, 60, 15);
+    sl_hpf.setTextBoxStyle(Slider::TextBoxBelow, false, 39, 13);
     sl_hpf.addListener(this);
     addAndMakeVisible(lbl_hpf);
+    lbl_hpf.setFont (Font (Font::getDefaultMonospacedFontName(), 14.0f, Font::plain).withTypefaceStyle ("Regular"));
     lbl_hpf.setText("HPF", dontSendNotification);
-    lbl_hpf.setFont (Font (Font::getDefaultMonospacedFontName(), 14.00f, Font::plain).withTypefaceStyle ("Regular"));
-    lbl_hpf.setJustificationType (Justification::centredLeft);
     lbl_hpf.setEditable (false, false, false);
-    lbl_hpf.attachToComponent(&sl_hpf, true);
     
     addAndMakeVisible (lbl_version);
     std::string version = "ver" + std::string(ProjectInfo::versionString);
     lbl_version.setText(version, dontSendNotification);
-    lbl_version.setFont (Font (Font::getDefaultMonospacedFontName(), 14.00f, Font::plain).withTypefaceStyle ("Regular"));
+    lbl_version.setFont (Font (Font::getDefaultMonospacedFontName(), 9.0f, Font::plain).withTypefaceStyle ("Regular"));
     lbl_version.setJustificationType (Justification::centredLeft);
     lbl_version.setEditable (false, false, false);
     
