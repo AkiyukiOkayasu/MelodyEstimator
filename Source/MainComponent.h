@@ -10,6 +10,8 @@
 #define XMLKEYNOISEGATE "noiseGateSettings"
 #define XMLKEYHIGHPASS "highpassFilterSettings"
 
+
+//==============================================================================
 struct CustomLookAndFeel    : public LookAndFeel_V4
 {
     CustomLookAndFeel()
@@ -26,8 +28,64 @@ struct CustomLookAndFeel    : public LookAndFeel_V4
         setColour(ToggleButton::tickColourId, Colour::Colour(0xFF2B2B2A));
         setColour(ToggleButton::tickDisabledColourId, Colour::Colour(0xFF2B2B2A));
     }
+    
+    void drawLinearSlider (Graphics& g, int x, int y, int width, int height,
+                           float sliderPos, float minSliderPos, float maxSliderPos,
+                           const Slider::SliderStyle style, Slider& slider) override
+    {
+        g.fillAll (slider.findColour (Slider::backgroundColourId));
+        g.setColour(slider.findColour (Slider::rotarySliderFillColourId));
+        g.drawRect (slider.getLocalBounds().toFloat(), 1.0f);
+        drawLinearSliderThumb (g, x, y, width, height, sliderPos, minSliderPos, maxSliderPos, style, slider);
+    }
+    
+    void drawLinearSliderThumb (Graphics& g, int x, int y, int width, int height,
+                                float sliderPos, float minSliderPos, float maxSliderPos,
+                                const Slider::SliderStyle style, Slider& slider) override
+    {
+        bool isDownOrDragging = slider.isEnabled() && (slider.isMouseOverOrDragging() || slider.isMouseButtonDown());
+        auto knobColour = slider.findColour (Slider::rotarySliderFillColourId)
+        .withMultipliedSaturation ((slider.hasKeyboardFocus (false) || isDownOrDragging) ? 1.3f : 0.9f)
+        .withMultipliedAlpha (slider.isEnabled() ? 1.0f : 0.7f);
+        
+        g.setColour (knobColour);
+        g.fillRect(Rectangle<float>(0.0f, sliderPos, width, 1.0f));
+    }
+    
+    
+    void drawRotarySlider (Graphics& g, int x, int y, int width, int height, float sliderPos,
+                           float rotaryStartAngle, float rotaryEndAngle, Slider& slider) override
+    {
+        auto radius = jmin (width / 2, height / 2) - 2.0f;
+        auto centreX = x + width * 0.5f;
+        auto centreY = y + height * 0.5f;
+        auto rx = centreX - radius;
+        auto ry = centreY - radius;
+        auto rw = radius * 2.0f;
+        auto angle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
+        bool isMouseOver = slider.isMouseOverOrDragging() && slider.isEnabled();
+        
+        if (slider.isEnabled())
+            g.setColour (slider.findColour (Slider::rotarySliderFillColourId).withAlpha (isMouseOver ? 1.0f : 0.7f));
+        else
+            g.setColour (Colour (0x80808080));
+        
+        {
+            Path filledArc;
+            filledArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle, angle, 0.0);
+            g.fillPath (filledArc);
+        }
+        
+        {
+            auto lineThickness = jmin (15.0f, jmin (width, height) * 0.45f) * 0.1f;
+            Path outlineArc;
+            outlineArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle, rotaryEndAngle, 0.0);
+            g.strokePath (outlineArc, PathStrokeType (lineThickness));
+        }
+    }
 };
 
+//==============================================================================
 class MainContentComponent :
 public AudioAppComponent,
 public MenuBarModel,
