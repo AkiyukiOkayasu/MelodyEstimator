@@ -16,17 +16,23 @@ struct CustomLookAndFeel    : public LookAndFeel_V4
 {
     CustomLookAndFeel()
     {
-        setColour(ResizableWindow::backgroundColourId, Colour::Colour(0xFFF9F9F4));
-        setColour(Slider::thumbColourId, Colour::Colour(0xFFAED1E6));//ロータリーエンコーダーのつまみ
-        setColour(Slider::rotarySliderFillColourId, Colour::Colour(0xFFC6DBF0));//ロータリーエンコーダーの外周(有効範囲)
-        setColour(Slider::rotarySliderOutlineColourId, Colour::Colour(0xFF2B2B2A));//ロータリーエンコーダーの外周(非有効範囲)
-        setColour(Slider::trackColourId, Colour::Colour(0x00AED1E6));//スライダーの有効範囲
-        setColour(Slider::backgroundColourId, Colour::Colour(0x002B2B2A));//スライダーの背景
-        setColour(Slider::textBoxTextColourId, Colour::Colour(0xFF2B2B2A));
-        setColour(Slider::textBoxOutlineColourId, Colour::Colour(0x002B2B2A));
-        setColour(Label::textColourId, Colour::Colour(0xFF2B2B2A));
-        setColour(ToggleButton::tickColourId, Colour::Colour(0xFF2B2B2A));
-        setColour(ToggleButton::tickDisabledColourId, Colour::Colour(0xFF2B2B2A));
+        auto me_green = Colour::Colour(0xFF84E2A8);
+        auto me_baseColour = Colour::Colour(0xFFEAEBED);
+        auto me_darkBlue = Colour::Colour(0xFF468189);
+        auto me_lightBlue = Colour::Colour(0xFFD6FFF6);
+        auto me_textColour = Colour::Colour(0xFF031926);
+        auto me_clear = Colour::Colour(0x00000000);
+        
+        //Fader
+        setColour(ResizableWindow::backgroundColourId, me_baseColour);
+        setColour(Slider::thumbColourId, me_darkBlue);
+        setColour(Slider::backgroundColourId, me_clear);
+        setColour(Slider::textBoxTextColourId, me_textColour);
+        setColour(Slider::textBoxOutlineColourId, me_clear);
+        //Rotary
+        setColour(Slider::rotarySliderFillColourId, me_darkBlue);
+        //Label
+        setColour(Label::textColourId,me_textColour);
     }
     
     void drawLinearSlider (Graphics& g, int x, int y, int width, int height,
