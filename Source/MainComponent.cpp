@@ -49,7 +49,9 @@ MainContentComponent::MainContentComponent()
     essentia::standard::AlgorithmFactory& factory = essentia::standard::AlgorithmFactory::instance();
     const float minFreq = MidiMessage::getMidiNoteInHertz((minNoteToEstimate - 5) - (12 * overSampleFactor), standardPitch);//minNoteToEstimateの完全四度下まで処理する
     const float maxFreq = MidiMessage::getMidiNoteInHertz(maxNoteToEstimate - (12 * overSampleFactor), standardPitch);
-    melodyEstimate = factory.create("PredominantPitchMelodia", "minFrequency", minFreq, "maxFrequency", maxFreq, "voicingTolerance", -0.9f);//voicingToleranceパラメータは要調整 [-1.0~1.4] default:0.2(反応のしやすさ的なパラメータ)
+    melodyEstimate = factory.create("PredominantPitchMelodia",
+                                    "minFrequency", minFreq, "maxFrequency", maxFreq,
+                                    "voicingTolerance", -0.9f);//voicingToleranceパラメータは要調整 [-1.0~1.4] default:0.2(反応のしやすさ的なパラメータ)
     pitchfilter = factory.create("PitchFilter", "confidenceThreshold", 70, "minChunkSize", 35);
     
     essentiaInput.reserve(lengthToEstimateMelody_sample);
@@ -339,7 +341,8 @@ void MainContentComponent::estimateMelody()
         const int target = noteArray[i] != -1 ? noteArray[i] + noteOffset : -1;
         if  (target != -1 && target != lastNote.load() && minNoteToEstimate <= target && target <= maxNoteToEstimate)
         {
-            bool isEnoughConsecutive = std::all_of(noteArray.begin() + i, noteArray.begin() + i + numConsecutive, [target](int x){return x + noteOffset == target;});
+            bool isEnoughConsecutive = std::all_of(noteArray.begin() + i, noteArray.begin() + i + numConsecutive,
+                                                   [target](int x){return x + noteOffset == target;});
             if (isEnoughConsecutive)
             {
                 lastNote.store(target);
