@@ -14,7 +14,7 @@ MainContentComponent::MainContentComponent()
     sl_noiseGateThreshold.addListener(this);
     addAndMakeVisible(lbl_noiseGate);
     lbl_noiseGate.setText("Gate", dontSendNotification);
-    lbl_noiseGate.setFont(Font (Font::getDefaultMonospacedFontName(), 14.0f, Font::plain).withTypefaceStyle ("Regular"));
+    lbl_noiseGate.setFont(Font (Font::getDefaultSansSerifFontName(), 14.0f, Font::plain).withTypefaceStyle ("Regular"));
     lbl_noiseGate.setJustificationType (Justification::centredLeft);
     lbl_noiseGate.setEditable (false, false, false);
     
@@ -23,23 +23,23 @@ MainContentComponent::MainContentComponent()
     sl_hpf.setRange(18.0, 120.0, 1.0);
     sl_hpf.setTextValueSuffix("Hz");
     sl_hpf.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    sl_hpf.setTextBoxStyle(Slider::TextBoxBelow, false, 55, 10);
+    sl_hpf.setTextBoxStyle(Slider::TextBoxBelow, true, 45, 18);
     sl_hpf.addListener(this);
     addAndMakeVisible(lbl_hpf);
-    lbl_hpf.setFont (Font (Font::getDefaultMonospacedFontName(), 14.0f, Font::plain).withTypefaceStyle ("Regular"));
+    lbl_hpf.setFont (Font (Font::getDefaultSansSerifFontName(), 14.0f, Font::plain).withTypefaceStyle ("Regular"));
     lbl_hpf.setText("HPF", dontSendNotification);
     lbl_hpf.setEditable (false, false, false);
     
     addAndMakeVisible (lbl_version);
     std::string version = "ver" + std::string(ProjectInfo::versionString);
     lbl_version.setText(version, dontSendNotification);
-    lbl_version.setFont (Font (Font::getDefaultMonospacedFontName(), 12.0f, Font::plain).withTypefaceStyle ("Regular"));
+    lbl_version.setFont (Font (Font::getDefaultSansSerifFontName(), 12.0f, Font::plain).withTypefaceStyle ("Regular"));
     lbl_version.setJustificationType (Justification::centredLeft);
     lbl_version.setEditable (false, false, false);
     
     addAndMakeVisible(lbl_pitch);
     lbl_pitch.setText("", dontSendNotification);
-    lbl_pitch.setFont(Font (Font::getDefaultMonospacedFontName(), 64.0f, Font::plain).withTypefaceStyle ("Regular"));
+    lbl_pitch.setFont(Font (Font::getDefaultSansSerifFontName(), 96.0f, Font::plain).withTypefaceStyle ("Regular"));
     lbl_pitch.setJustificationType(Justification::centred);
     lbl_pitch.setEditable(false, false, false);
     
