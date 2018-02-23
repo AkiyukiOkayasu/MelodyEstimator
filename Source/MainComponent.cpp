@@ -167,7 +167,7 @@ void MainContentComponent::paint (Graphics& g)
     auto meterArea = Rectangle<int>(46, 80, 52, 183);
     meterArea.removeFromTop(meterArea.getHeight() * (1.0 - gain));
     g.setColour(Colour::Colour(0xFFA9FDAC));
-    g.fillRoundedRectangle (meterArea.toFloat(), 0.0);
+    g.fillRect(meterArea.toFloat());
 }
 
 void MainContentComponent::resized()
