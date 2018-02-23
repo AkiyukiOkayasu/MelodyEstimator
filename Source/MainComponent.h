@@ -163,6 +163,8 @@ private:
     Label lbl_hpf;
     //バージョン表示
     Label lbl_version;
+    //音名表示
+    Label lbl_pitch;
     
     ScopedPointer<dsp::Oversampling<float>> oversampling;
     static const int overSampleFactor = 1;//2^overSampleFactor

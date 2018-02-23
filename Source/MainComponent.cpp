@@ -37,6 +37,12 @@ MainContentComponent::MainContentComponent()
     lbl_version.setJustificationType (Justification::centredLeft);
     lbl_version.setEditable (false, false, false);
     
+    addAndMakeVisible(lbl_pitch);
+    lbl_pitch.setText("", dontSendNotification);
+    lbl_pitch.setFont(Font (Font::getDefaultMonospacedFontName(), 64.0f, Font::plain).withTypefaceStyle ("Regular"));
+    lbl_pitch.setJustificationType(Justification::centred);
+    lbl_pitch.setEditable(false, false, false);
+    
     //Essentia
     preApplyEssentia.buffer.setSize(1, lengthToEstimateMelody_sample);
     essentia::init();
@@ -64,7 +70,7 @@ MainContentComponent::MainContentComponent()
         midiOut->startBackgroundThread();
     }
     
-    setSize (145, 305);
+    setSize (305, 305);
     
     //保存したパラメータをXMLファイルから呼び出し
     PropertiesFile::Options options;
@@ -168,6 +174,51 @@ void MainContentComponent::paint (Graphics& g)
     meterArea.removeFromTop(meterArea.getHeight() * (1.0 - gain));
     g.setColour(Colour::Colour(0xFFA9FDAC));
     g.fillRect(meterArea.toFloat());
+    
+    std::string nt;
+    int chrm = lastNote.load() % 12;
+    switch (chrm)
+    {
+        case 0:
+            nt = "C";
+            break;
+        case 1:
+            nt = "C#";
+            break;
+        case 2:
+            nt = "D";
+            break;
+        case 3:
+            nt = "D#";
+            break;
+        case 4:
+            nt = "E";
+            break;
+        case 5:
+            nt = "F";
+            break;
+        case 6:
+            nt = "F#";
+            break;
+        case 7:
+            nt = "G";
+            break;
+        case 8:
+            nt = "G#";
+            break;
+        case 9:
+            nt = "A";
+            break;
+        case 10:
+            nt = "A#";
+            break;
+        case 11:
+            nt = "B";
+            break;
+        default:
+            break;
+    }
+    lbl_pitch.setText(nt, dontSendNotification);
 }
 
 void MainContentComponent::resized()
@@ -176,7 +227,8 @@ void MainContentComponent::resized()
     lbl_hpf.setBounds(8, 27, 35, 15);
     sl_noiseGateThreshold.setBounds(47, 80, 52, 183);
     lbl_noiseGate.setBounds(6, 164, 42, 15);
-    lbl_version.setBounds(80, 288, 65, 12);
+    lbl_version.setBounds(240, 288, 65, 12);
+    lbl_pitch.setBounds(173, 110, 82, 82);
 }
 
 void MainContentComponent::sliderValueChanged (Slider* slider)
@@ -285,12 +337,12 @@ void MainContentComponent::estimateMelody()
     for (int i = 0; i < noteArray.size() - numConsecutive; ++i)
     {
         const int target = noteArray[i] != -1 ? noteArray[i] + noteOffset : -1;
-        if  (target != -1 && target != lastNote && minNoteToEstimate <= target && target <= maxNoteToEstimate)
+        if  (target != -1 && target != lastNote.load() && minNoteToEstimate <= target && target <= maxNoteToEstimate)
         {
             bool isEnoughConsecutive = std::all_of(noteArray.begin() + i, noteArray.begin() + i + numConsecutive, [target](int x){return x + noteOffset == target;});
             if (isEnoughConsecutive)
             {
-                lastNote = target;
+                lastNote.store(target);
                 sendMIDI(lastNote);
             }
         }
