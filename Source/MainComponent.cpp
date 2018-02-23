@@ -172,7 +172,7 @@ void MainContentComponent::paint (Graphics& g)
     auto range = sl_noiseGateThreshold.getRange();
     const float gain = (level - range.getStart()) / range.getLength();
     g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
-    auto meterArea = Rectangle<int>(46, 80, 52, 183);
+    auto meterArea = sl_noiseGateThreshold.getBounds();
     meterArea.removeFromTop(meterArea.getHeight() * (1.0 - gain));
     g.setColour(lookAndFeel.me_green);
     g.fillRect(meterArea.toFloat());
