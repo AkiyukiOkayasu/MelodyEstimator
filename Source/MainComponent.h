@@ -145,7 +145,7 @@ private:
     const String midiPortName = "MelodyEstimator";
     ScopedPointer<MidiOutput> midiOut;
     MidiMessage midiMessage;
-    int lastNote = -1;
+    std::atomic<int> lastNote{-1};
     
     std::atomic<float> RMSlevel_dB{-100.0};
     
