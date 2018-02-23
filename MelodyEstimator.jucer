@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="B5zO5T" name="MelodyEstimator" displaySplashScreen="0" reportAppUsage="0"
-              splashScreenColour="Dark" projectType="guiapp" version="1.0.0"
+              splashScreenColour="Dark" projectType="guiapp" version="1.0.1"
               bundleIdentifier="com.akiyukiokayasu.MelodyEstimator" includeBinaryInAppConfig="1"
               cppLanguageStandard="14" jucerVersion="5.2.1" companyCopyright=""
               companyName="Akiyuki Okayasu">
@@ -64,4 +64,7 @@
     <MODULE id="juce_osc" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
   </MODULES>
   <JUCEOPTIONS/>
+  <LIVE_SETTINGS>
+    <OSX/>
+  </LIVE_SETTINGS>
 </JUCERPROJECT>
