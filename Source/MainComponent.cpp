@@ -72,7 +72,7 @@ MainContentComponent::MainContentComponent()
         midiOut->startBackgroundThread();
     }
     
-    setSize (305, 305);
+    setSize (305, 277);
     
     //保存したパラメータをXMLファイルから呼び出し
     PropertiesFile::Options options;
@@ -225,12 +225,12 @@ void MainContentComponent::paint (Graphics& g)
 
 void MainContentComponent::resized()
 {
-    sl_hpf.setBounds(42, 9, 61, 60);
-    lbl_hpf.setBounds(8, 27, 35, 15);
+    sl_hpf.setBounds(42, 12, 61, 60);
+    lbl_hpf.setBounds(8, 30, 35, 15);
     sl_noiseGateThreshold.setBounds(47, 80, 52, 183);
     lbl_noiseGate.setBounds(6, 164, 42, 15);
-    lbl_version.setBounds(240, 288, 65, 12);
-    lbl_pitch.setBounds(173, 110, 82, 82);
+    lbl_version.setBounds(241, 248, 46, 15);
+    lbl_pitch.setBounds(143, 82, 130, 130);
 }
 
 void MainContentComponent::sliderValueChanged (Slider* slider)

@@ -14,23 +14,23 @@
 //==============================================================================
 struct CustomLookAndFeel    : public LookAndFeel_V4
 {
+    Colour me_green = Colour::Colour(0xFF73DB72);
+    Colour me_baseColour = Colour::Colour(0xFF43444D);
+    Colour me_outlineColour = Colour::Colour(0xFF888BA1);
+    Colour me_sliderColour = Colour::Colour(0xFF4392F1);
+    Colour me_textColour = Colour::Colour(0xFFFCFFFD);
+    Colour me_clear = Colour::Colour(0x00000000);
+    
     CustomLookAndFeel()
     {
-        auto me_green = Colour::Colour(0xFF84E2A8);
-        auto me_baseColour = Colour::Colour(0xFFEAEBED);
-        auto me_darkBlue = Colour::Colour(0xFF468189);
-        auto me_lightBlue = Colour::Colour(0xFFD6FFF6);
-        auto me_textColour = Colour::Colour(0xFF031926);
-        auto me_clear = Colour::Colour(0x00000000);
-        
         //Fader
         setColour(ResizableWindow::backgroundColourId, me_baseColour);
-        setColour(Slider::thumbColourId, me_darkBlue);
+        setColour(Slider::thumbColourId, me_sliderColour);
         setColour(Slider::backgroundColourId, me_clear);
         setColour(Slider::textBoxTextColourId, me_textColour);
         setColour(Slider::textBoxOutlineColourId, me_clear);
         //Rotary
-        setColour(Slider::rotarySliderFillColourId, me_darkBlue);
+        setColour(Slider::rotarySliderFillColourId, me_sliderColour);
         //Label
         setColour(Label::textColourId,me_textColour);
     }
@@ -39,9 +39,11 @@ struct CustomLookAndFeel    : public LookAndFeel_V4
                            float sliderPos, float minSliderPos, float maxSliderPos,
                            const Slider::SliderStyle style, Slider& slider) override
     {
-        g.fillAll (slider.findColour (Slider::backgroundColourId));
-        g.setColour(slider.findColour (Slider::rotarySliderFillColourId));
-        g.drawRect (slider.getLocalBounds().toFloat(), 1.0f);
+        auto lineThickness = jmin (15.0f, jmin (width, height) * 0.45f) * 0.1f;
+        Path outlineArc;
+        outlineArc.addRectangle(x, y, width, height);
+        g.setColour(me_outlineColour);
+        g.strokePath (outlineArc, PathStrokeType (lineThickness));
         drawLinearSliderThumb (g, x, y, width, height, sliderPos, minSliderPos, maxSliderPos, style, slider);
     }
     
@@ -49,11 +51,7 @@ struct CustomLookAndFeel    : public LookAndFeel_V4
                                 float sliderPos, float minSliderPos, float maxSliderPos,
                                 const Slider::SliderStyle style, Slider& slider) override
     {
-        bool isDownOrDragging = slider.isEnabled() && (slider.isMouseOverOrDragging() || slider.isMouseButtonDown());
-        auto knobColour = slider.findColour (Slider::rotarySliderFillColourId)
-        .withMultipliedSaturation ((slider.hasKeyboardFocus (false) || isDownOrDragging) ? 1.3f : 0.9f)
-        .withMultipliedAlpha (slider.isEnabled() ? 1.0f : 0.7f);
-        
+        auto knobColour = slider.findColour (Slider::rotarySliderFillColourId);
         g.setColour (knobColour);
         g.fillRect(Rectangle<float>(1.0f, sliderPos, width, 5.0f));
     }
@@ -69,25 +67,18 @@ struct CustomLookAndFeel    : public LookAndFeel_V4
         auto ry = centreY - radius;
         auto rw = radius * 2.0f;
         auto angle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
-        bool isMouseOver = slider.isMouseOverOrDragging() && slider.isEnabled();
         
-        if (slider.isEnabled())
-            g.setColour (slider.findColour (Slider::rotarySliderFillColourId).withAlpha (isMouseOver ? 1.0f : 0.7f));
-        else
-            g.setColour (Colour (0x80808080));
+        g.setColour (slider.findColour (Slider::rotarySliderFillColourId));
         
-        {
-            Path filledArc;
-            filledArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle, angle, 0.0);
-            g.fillPath (filledArc);
-        }
-        
-        {
-            auto lineThickness = jmin (15.0f, jmin (width, height) * 0.45f) * 0.1f;
-            Path outlineArc;
-            outlineArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle, rotaryEndAngle, 0.0);
-            g.strokePath (outlineArc, PathStrokeType (lineThickness));
-        }
+        Path filledArc;
+        filledArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle, angle, 0.0);
+        g.fillPath (filledArc);
+
+        auto lineThickness = jmin (15.0f, jmin (width, height) * 0.45f) * 0.1f;
+        Path outlineArc;
+        outlineArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle, rotaryEndAngle, 0.0);
+        g.setColour(me_outlineColour);
+        g.strokePath (outlineArc, PathStrokeType (lineThickness));
     }
 };
 
