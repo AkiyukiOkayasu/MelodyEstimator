@@ -10,7 +10,7 @@ MainContentComponent::MainContentComponent()
     sl_noiseGateThreshold.setRange(-72.0, 0.0, 1.0);
     sl_noiseGateThreshold.setSliderStyle (Slider::LinearBarVertical);
     sl_noiseGateThreshold.setTextValueSuffix("dB");
-    sl_noiseGateThreshold.setTextBoxStyle (Slider::TextBoxBelow, false, 55, 10);
+    sl_noiseGateThreshold.setTextBoxStyle (Slider::TextBoxBelow, true, 45, 18);
     sl_noiseGateThreshold.addListener(this);
     addAndMakeVisible(lbl_noiseGate);
     lbl_noiseGate.setText("Gate", dontSendNotification);
