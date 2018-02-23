@@ -49,7 +49,7 @@ struct CustomLookAndFeel    : public LookAndFeel_V4
         .withMultipliedAlpha (slider.isEnabled() ? 1.0f : 0.7f);
         
         g.setColour (knobColour);
-        g.fillRect(Rectangle<float>(0.0f, sliderPos, width, 1.0f));
+        g.fillRect(Rectangle<float>(1.0f, sliderPos, width, 5.0f));
     }
     
     
