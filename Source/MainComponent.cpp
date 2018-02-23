@@ -8,9 +8,9 @@ MainContentComponent::MainContentComponent()
     //GUI Noise gate
     addAndMakeVisible(sl_noiseGateThreshold);
     sl_noiseGateThreshold.setRange(-72.0, 0.0, 1.0);
+    sl_noiseGateThreshold.setSliderStyle (Slider::LinearBarVertical);
     sl_noiseGateThreshold.setTextValueSuffix("dB");
-    sl_noiseGateThreshold.setSliderStyle (Slider::LinearVertical);
-    sl_noiseGateThreshold.setTextBoxStyle (Slider::TextBoxBelow, false, 45, 10);
+    sl_noiseGateThreshold.setTextBoxStyle (Slider::TextBoxBelow, false, 55, 10);
     sl_noiseGateThreshold.addListener(this);
     addAndMakeVisible(lbl_noiseGate);
     lbl_noiseGate.setText("Gate", dontSendNotification);
@@ -23,7 +23,7 @@ MainContentComponent::MainContentComponent()
     sl_hpf.setRange(18.0, 120.0, 1.0);
     sl_hpf.setTextValueSuffix("Hz");
     sl_hpf.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    sl_hpf.setTextBoxStyle(Slider::TextBoxBelow, false, 45, 10);
+    sl_hpf.setTextBoxStyle(Slider::TextBoxBelow, false, 55, 10);
     sl_hpf.addListener(this);
     addAndMakeVisible(lbl_hpf);
     lbl_hpf.setFont (Font (Font::getDefaultMonospacedFontName(), 14.0f, Font::plain).withTypefaceStyle ("Regular"));
@@ -164,7 +164,7 @@ void MainContentComponent::paint (Graphics& g)
     auto range = sl_noiseGateThreshold.getRange();
     const float gain = (level - range.getStart()) / range.getLength();
     g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
-    auto meterArea = Rectangle<int>(55, 80, 40, 183);
+    auto meterArea = Rectangle<int>(46, 80, 52, 183);
     meterArea.removeFromTop(meterArea.getHeight() * (1.0 - gain));
     g.setColour(Colour::Colour(0xFFA9FDAC));
     g.fillRoundedRectangle (meterArea.toFloat(), 0.0);
@@ -172,10 +172,10 @@ void MainContentComponent::paint (Graphics& g)
 
 void MainContentComponent::resized()
 {
-    sl_hpf.setBounds(43, 1, 61, 70);
-    lbl_hpf.setBounds(17, 24, 35, 15);
-    sl_noiseGateThreshold.setBounds(55, 80, 40, 183);
-    lbl_noiseGate.setBounds(12, 248, 42, 15);
+    sl_hpf.setBounds(42, 9, 61, 60);
+    lbl_hpf.setBounds(8, 27, 35, 15);
+    sl_noiseGateThreshold.setBounds(47, 80, 52, 183);
+    lbl_noiseGate.setBounds(6, 164, 42, 15);
     lbl_version.setBounds(80, 288, 65, 12);
 }
 
