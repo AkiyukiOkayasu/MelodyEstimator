@@ -3,6 +3,8 @@ Stand-alone application for estimate the main melody from streaming audio in rea
 This is made with [JUCE](https://github.com/WeAreROLI/JUCE) and [Essentia](https://github.com/MTG/essentia).  
 Commentary(in Japasene) is [here](https://qiita.com/AkiyukiOkayasu/items/7b5a0671cbfc8e704590).  
 
+![screen shot](https://github.com/AkiyukiOkayasu/MelodyEstimator/blob/master/screenshot.png)  
+
 ## Feature  
 - Real-time estimating.
 - Wide estimate pitch range(C2~C6).
