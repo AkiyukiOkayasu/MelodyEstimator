@@ -1,6 +1,7 @@
 # Melody Estimator  
 
 [![GitHub version](https://badge.fury.io/gh/AkiyukiOkayasu%2FMelodyEstimator.svg)](https://badge.fury.io/gh/AkiyukiOkayasu%2FMelodyEstimator)
+[![LICENSE](https://img.shields.io/github/license/AkiyukiOkayasu/MelodyEstimator)](LICENSE)
 
 Stand-alone application for estimate the main melody from streaming audio in real-time.  
 This is made with [JUCE](https://github.com/WeAreROLI/JUCE) and [Essentia](https://github.com/MTG/essentia).  
@@ -19,6 +20,3 @@ The sample rate must be 44100Hz, not supported other sample rates.
 
 ## Download  
 You can download the pre-built application from [release](https://github.com/AkiyukiOkayasu/MelodyEstimator/releases).
-
-## License  
-GPLv3
