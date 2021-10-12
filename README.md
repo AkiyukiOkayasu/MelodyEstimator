@@ -1,4 +1,7 @@
 # Melody Estimator  
+
+[![GitHub version](https://badge.fury.io/gh/AkiyukiOkayasu%2FMelodyEstimator.svg)](https://badge.fury.io/gh/AkiyukiOkayasu%2FMelodyEstimator)
+
 Stand-alone application for estimate the main melody from streaming audio in real-time.  
 This is made with [JUCE](https://github.com/WeAreROLI/JUCE) and [Essentia](https://github.com/MTG/essentia).  
 Commentary(in Japasene) is [here](https://qiita.com/AkiyukiOkayasu/items/7b5a0671cbfc8e704590).  
